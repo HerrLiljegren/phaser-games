@@ -1,0 +1,7 @@
+{
+    "globals": {
+        "Phaser": false,
+        "define": true,
+        "require": true
+    }
+}

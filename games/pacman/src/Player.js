@@ -21,25 +21,25 @@ Pacman.Player = function(game) {
 
 Pacman.Player.prototype.update = function () {
     if (this.game.gameOver) return;
-    if (movementKeys.left.isDown) {
+    if (this.game.movementKeys.left.isDown) {
         this.sprite.body.velocity.x = -this.maxSpeed;
-        player.sprite.animations.play('left');
+        this.sprite.animations.play('left');
     }
-    else if (movementKeys.right.isDown) {
+    else if (this.game.movementKeys.right.isDown) {
         this.sprite.body.velocity.x = this.maxSpeed;
-        player.sprite.animations.play('right');
+        this.sprite.animations.play('right');
     }
     
-    if (movementKeys.up.isDown) {
+    if (this.game.movementKeys.up.isDown) {
         this.sprite.body.velocity.y = -this.maxSpeed;
-        player.sprite.animations.play('up');
+        this.sprite.animations.play('up');
     }
-    else if (movementKeys.down.isDown) {
+    else if (this.game.movementKeys.down.isDown) {
         this.sprite.body.velocity.y = this.maxSpeed;
-        player.sprite.animations.play('down');
+        this.sprite.animations.play('down');
     }
     
-    if (!movementKeys.left.isDown && !movementKeys.right.isDown && !movementKeys.up.isDown && !movementKeys.down.isDown) {
+    if (!this.game.movementKeys.left.isDown && !this.game.movementKeys.right.isDown && !this.game.movementKeys.up.isDown && !this.game.movementKeys.down.isDown) {
         //  Stand still
         //player.sprite.animations.stop();
         //player.frame = 4;
