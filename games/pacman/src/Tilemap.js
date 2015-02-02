@@ -1,5 +1,5 @@
 ﻿'use strict';
-var Tilemap = function (game) {
+Pacman.Tilemap = function (game) {
     this.game = game;
     this.game.stage.backgroundColor = '#000';
     this.map = this.game.add.tilemap('pacman-level');

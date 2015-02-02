@@ -1,5 +1,5 @@
-﻿'use strict';
-var Player = function(game) {
+'use strict';
+Pacman.Player = function(game) {
     this.game = game;
     this.startX = 32 * 13;
     this.startY = 32 * 17;
@@ -19,7 +19,7 @@ var Player = function(game) {
 
 }
 
-Player.prototype.update = function () {
+Pacman.Player.prototype.update = function () {
     if (this.game.gameOver) return;
     if (movementKeys.left.isDown) {
         this.sprite.body.velocity.x = -this.maxSpeed;
@@ -46,7 +46,7 @@ Player.prototype.update = function () {
     }
 }
 
-Player.prototype.die = function(a, b, c) {
+Pacman.Player.prototype.die = function(a, b, c) {
     
     if (!this.game.gameOver && --this.game.lives < 1) {
         this.game.gameOver = true;

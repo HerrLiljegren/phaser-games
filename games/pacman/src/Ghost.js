@@ -1,5 +1,5 @@
-﻿'use strict';
-var Ghost = function(game) {
+'use strict';
+Pacman.Ghost = function(game) {
     this.game = game;
 
     this.sprite = this.game.add.sprite(32 * 13, 32 * 11, 'sprites');
@@ -17,6 +17,6 @@ var Ghost = function(game) {
     this.sprite.animations.play('right');
 }
 
-Ghost.prototype.update = function() {
+Pacman.Ghost.prototype.update = function() {
     
 }
