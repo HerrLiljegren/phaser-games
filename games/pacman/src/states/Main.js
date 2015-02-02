@@ -7,7 +7,7 @@ Pacman.Main = function(game) {
         this.tilemap = null,
         this.player = null,
         this.text = "",
-        this.ghost = null;
+        this.ghosts = [];
 };
 
 Pacman.Main.prototype = {
@@ -39,7 +39,10 @@ Pacman.Main.prototype = {
 
         // The player and its settings
         this.player = new Pacman.Player(this.game);
-        this.ghost = new Pacman.Ghost(this.game);
+        
+        for(var i = 0; i < 4; i++) {
+            this.ghosts.push(new Pacman.Ghost(this.game, i));
+        }
 
         this.text = this.game.add.text(32, 32 * 10, this.getScoreBoardText(), {
             font: "14px Arial",
@@ -58,8 +61,11 @@ Pacman.Main.prototype = {
         //game.physics.arcade.collide(player.sprite, tilemap.trees);
         this.game.physics.arcade.collide(this.player.sprite, this.tilemap.level);
         this.game.physics.arcade.overlap(this.player.sprite, this.tilemap.pills);
-        this.game.physics.arcade.collide(this.ghost.sprite, this.tilemap.level);
-        this.game.physics.arcade.overlap(this.ghost.sprite, this.player.sprite, this.player.die, null, this.player);
+        
+        for(var i in this.ghosts) {
+            this.game.physics.arcade.collide(this.ghosts[i].sprite, this.tilemap.level);
+            this.game.physics.arcade.overlap(this.ghosts[i].sprite, this.player.sprite, this.player.die, null, this.player);
+        }
 
 
         //  Reset the players velocity (movement)
@@ -79,7 +85,10 @@ Pacman.Main.prototype = {
         //}
 
         this.player.update();
-        this.ghost.update();
+        for(var i in this.ghosts) {
+            this.ghosts[i].update();    
+        }
+        
         this.text.setText(this.getScoreBoardText());
 
         if (this.game.gameOver) {
