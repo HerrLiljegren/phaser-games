@@ -1,13 +1,15 @@
-﻿'use strict';
-Pacman.Tilemap = function (game) {
+'use strict';
+Pacman.Tilemap = function (game, player) {
     this.game = game;
+    this.player = player;
     this.game.stage.backgroundColor = '#000';
     this.map = this.game.add.tilemap('pacman-level');
     this.map.addTilesetImage('maptiles', 'maptiles');
 
     this.level = this.map.createLayer('Level');
     this.pills = this.map.createLayer('Pills');
-
+    
+    var t = this.map.objects['Metadata'];
 
 
     //this.layer2 = this.map.createLayer('Level2');
@@ -23,11 +25,20 @@ Pacman.Tilemap = function (game) {
     //this.map.setCollisionByExclusion([170,229, 193, 194], this.layer);
     this.map.setCollisionByExclusion([28,29,30], true, this.level);
 
-    this.map.setTileIndexCallback(30, function(sprite, tile) {
-        tile.index = -1;
-        this.pills.dirty = true;
-        this.game.score++;
-        return false;
+    this.map.setTileIndexCallback([28, 30], function(sprite, tile) {
+        if(Math.abs(sprite.x - tile.worldX) < (tile.width * 0.5) && Math.abs(sprite.y - tile.worldY) < (tile.height * 0.5)) {
+            
+            if(tile.index == 28) {
+                this.player.makeSuper();
+            }
+            
+            tile.index = -1;
+            this.pills.dirty = true;
+            this.game.score++;
+            
+            this.game.soundEatFruit.play();
+            return false;
+        }
 
     }, this, this.pills);
 

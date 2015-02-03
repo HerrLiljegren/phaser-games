@@ -1,6 +1,7 @@
 'use strict';
-Pacman.Ghost = function(game, index) {
+Pacman.Ghost = function(game, player, index) {
     this.game = game;
+    this.player = player;
 
     this.sprite = this.game.add.sprite(32 * 13, 32 * 11, 'sprites');
     this.game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
@@ -24,6 +25,8 @@ Pacman.Ghost = function(game, index) {
             break;
     }
     
+    this.sprite.animations.add('weak', [12, 13], 4, true);
+    
     
     this.maxSpeed = 150;
 
@@ -32,7 +35,11 @@ Pacman.Ghost = function(game, index) {
 }
 
 Pacman.Ghost.prototype.update = function() {
-    
+    if(this.player.isSuper){
+        this.sprite.animations.play('weak');
+    } else {
+        this.sprite.animations.play('right');
+    }
 }
 
 Pacman.Ghost.prototype._addRedAnimations = function() {

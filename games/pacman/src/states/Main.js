@@ -13,16 +13,13 @@ Pacman.Main = function(game) {
 Pacman.Main.prototype = {
     preload: function() {
         console.log('Main.preload');
-        this.game.load.spritesheet('sprites', 'assets/sprites.png', 32, 32, 14 * 4, 0, 0);
-        this.game.load.tilemap('pacman-level', 'assets/pacman-level.json', null, Phaser.Tilemap.TILED_JSON);
-        this.game.load.image('maptiles', 'assets/maptiles.png');
+        
     },
     create: function() {
         console.log('Main.create');
         this.game.score = 0;
         this.game.lives = 3;
         this.game.gameOver = false;
-        
         
         this.game.movementKeys = {
             up: this.game.input.keyboard.addKey(Phaser.Keyboard.W),
@@ -31,17 +28,24 @@ Pacman.Main.prototype = {
             right: this.game.input.keyboard.addKey(Phaser.Keyboard.D),
         };
         
-        //  We're going to be using physics, so enable the Arcade Physics system
-        this.game.physics.startSystem(Phaser.Physics.ARCADE);
+        this.game.soundChomp = this.game.add.audio('chomp', 1);
+        this.game.soundDeath = this.game.add.audio('death', 1);
+        this.game.soundEatFruit = this.game.add.audio('eatfruit', 1);
+        this.game.soundEatGhost = this.game.add.audio('eatghost', 1);
+        this.game.soundExtraPac = this.game.add.audio('extrapac', 1);
+        this.game.soundIntermission = this.game.add.audio('intermission', 1);
+        
         //game.world.setBounds(-0, 0, 800, 600);
-
-        this.tilemap = new Pacman.Tilemap(this.game);
-
+        
         // The player and its settings
         this.player = new Pacman.Player(this.game);
         
+        this.tilemap = new Pacman.Tilemap(this.game, this.player);
+
+        
+        
         for(var i = 0; i < 4; i++) {
-            this.ghosts.push(new Pacman.Ghost(this.game, i));
+            this.ghosts.push(new Pacman.Ghost(this.game, this.player, i));
         }
 
         this.text = this.game.add.text(32, 32 * 10, this.getScoreBoardText(), {
@@ -99,6 +103,8 @@ Pacman.Main.prototype = {
 
     render: function() {
         //player.render();
+        
+        this.game.debug.text( this.player.sprite.position.x.toFixed(0) + ", " + this.player.sprite.position.y.toFixed(0), 32*11, 32*16 );
     },
 
     getScoreBoardText: function() {

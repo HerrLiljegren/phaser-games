@@ -13,14 +13,19 @@ Pacman.Player = function(game) {
     this.sprite.animations.add('up', [52, 53], 4, true);
 
     this.maxSpeed = 150;
+    this.isSuper = false;
+    this.superTime = 10;
 
     this.sprite.body.velocity.x = this.maxSpeed;
     this.sprite.animations.play('right');
-
+    
 }
 
 Pacman.Player.prototype.update = function () {
     if (this.game.gameOver) return;
+    
+    if(this.isSuper) { this.maxSpeed = 300; } else {this.maxSpeed = 150;}
+    
     if (this.game.movementKeys.left.isDown) {
         this.sprite.body.velocity.x = -this.maxSpeed;
         this.sprite.animations.play('left');
@@ -44,6 +49,14 @@ Pacman.Player.prototype.update = function () {
         //player.sprite.animations.stop();
         //player.frame = 4;
     }
+    
+    if(this.sprite.position.x < -32)
+        this.sprite.position.x = 896+32;
+    
+    if(this.sprite.position.x > 896+32) {
+            this.sprite.position.x = -32;
+    }
+        
 }
 
 Pacman.Player.prototype.die = function(a, b, c) {
@@ -53,4 +66,9 @@ Pacman.Player.prototype.die = function(a, b, c) {
     } else {
         this.sprite.position.set(this.startX, this.startY);
     };
+}
+
+Pacman.Player.prototype.makeSuper = function(){
+    this.isSuper = true;
+    this.game.time.events.add(Phaser.Timer.SECOND * this.superTime, function(){this.isSuper = false;}, this);
 }
