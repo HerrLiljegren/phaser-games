@@ -2,8 +2,10 @@
 Pacman.Ghost = function(game, player, index) {
     this.game = game;
     this.player = player;
+    this.tilemap = null;
 
     this.sprite = this.game.add.sprite(32 * 13, 32 * 11, 'sprites');
+    this.sprite.name = "ghost";
     this.game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
     this.sprite.frame = 0;
 
@@ -30,7 +32,7 @@ Pacman.Ghost = function(game, player, index) {
     
     this.maxSpeed = 150;
 
-    //this.sprite.body.velocity.x = this.maxSpeed;
+    this.sprite.body.velocity.y = -this.maxSpeed;
     this.sprite.animations.play('right');
 }
 
@@ -40,6 +42,7 @@ Pacman.Ghost.prototype.update = function() {
     } else {
         this.sprite.animations.play('right');
     }
+
 }
 
 Pacman.Ghost.prototype._addRedAnimations = function() {
@@ -76,4 +79,12 @@ Pacman.Ghost.prototype._addBlueAnimations = function() {
     this.sprite.animations.add('up', [38, 39], 4, true);   
     
     this.sprite.position.set(32 * 14, 32 * 14);
+}
+
+Pacman.Ghost.prototype.setTilemap = function(tilemap) {
+    this.tilemap = tilemap;
+}
+
+Pacman.Ghost.prototype.route = function(sprite, tile) {
+    debugger;
 }

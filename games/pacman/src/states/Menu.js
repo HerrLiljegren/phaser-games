@@ -22,9 +22,9 @@ Pacman.Menu.prototype = {
         var t = this.game.add.text(this.game.world.centerX, this.game.world.centerY + 150, text, style);
         t.anchor.set(0.5, 0.5);
         
-        //this.game.state.start('Game');
+        this.game.state.start('Game');
         this.game.beginningSound = this.game.add.audio('beginning', 1);
-        this.game.beginningSound.play();
+        //this.game.beginningSound.play();
         
         
     },

@@ -17,6 +17,7 @@ Pacman.Main.prototype = {
     },
     create: function() {
         console.log('Main.create');
+        this.game.random = new Phaser.RandomDataGenerator();
         this.game.score = 0;
         this.game.lives = 3;
         this.game.gameOver = false;
@@ -44,8 +45,11 @@ Pacman.Main.prototype = {
 
         
         
-        for(var i = 0; i < 4; i++) {
-            this.ghosts.push(new Pacman.Ghost(this.game, this.player, i));
+        for (var i = 0; i < 1; i++) {
+            var ghost = new Pacman.Ghost(this.game, this.player, i);
+            ghost.setTilemap(this.tilemap);
+
+            this.ghosts.push(ghost);
         }
 
         this.text = this.game.add.text(32, 32 * 10, this.getScoreBoardText(), {
@@ -68,6 +72,7 @@ Pacman.Main.prototype = {
         
         for(var i in this.ghosts) {
             this.game.physics.arcade.collide(this.ghosts[i].sprite, this.tilemap.level);
+            this.game.physics.arcade.overlap(this.ghosts[i].sprite, this.tilemap.pills, this.ghosts[i].route);
             this.game.physics.arcade.overlap(this.ghosts[i].sprite, this.player.sprite, this.player.die, null, this.player);
         }
 
