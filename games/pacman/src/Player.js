@@ -1,6 +1,7 @@
 'use strict';
 Pacman.Player = function(game) {
     this.game = game;
+    
     this.startX = 32 * 13;
     this.startY = 32 * 17;
     this.sprite = this.game.add.sprite(this.startX, this.startY, 'sprites');

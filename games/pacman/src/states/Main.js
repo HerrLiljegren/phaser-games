@@ -3,7 +3,7 @@
 var Pacman = Pacman || {};
 
 Pacman.Main = function(game) {
-    this.game = game,
+        this.game = game,
         this.tilemap = null,
         this.player = null,
         this.text = "",
@@ -45,7 +45,7 @@ Pacman.Main.prototype = {
 
         
         
-        for (var i = 0; i < 1; i++) {
+        for (var i = 0; i < 4; i++) {
             var ghost = new Pacman.Ghost(this.game, this.player, i);
             ghost.setTilemap(this.tilemap);
 
@@ -71,7 +71,7 @@ Pacman.Main.prototype = {
         this.game.physics.arcade.overlap(this.player.sprite, this.tilemap.pills);
         
         for(var i in this.ghosts) {
-            this.game.physics.arcade.collide(this.ghosts[i].sprite, this.tilemap.level);
+            this.game.physics.arcade.collide(this.ghosts[i].sprite, this.tilemap.level, this.ghosts[i].wallCollision);
             this.game.physics.arcade.overlap(this.ghosts[i].sprite, this.tilemap.pills, this.ghosts[i].route);
             this.game.physics.arcade.overlap(this.ghosts[i].sprite, this.player.sprite, this.player.die, null, this.player);
         }
@@ -108,8 +108,13 @@ Pacman.Main.prototype = {
 
     render: function() {
         //player.render();
-        
+        for(var i in this.ghosts){
+            this.ghosts[i].render();
+        }
         this.game.debug.text( this.player.sprite.position.x.toFixed(0) + ", " + this.player.sprite.position.y.toFixed(0), 32*11, 32*16 );
+        this.tilemap.render();
+        
+        this.game.debug.text(this.game.input.activePointer.position, this.game.input.activePointer.x, this.game.input.activePointer.y);
     },
 
     getScoreBoardText: function() {
