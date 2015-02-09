@@ -280,7 +280,7 @@ Pacman.Ghost.Behaviour = {
                 if(otherGhosts[i].name === "Red") red = otherGhosts[i];
             }
             
-            var tileInFroqntOfPacman = Pacman.Helpers.Tilemap.getTileInfrontOf(playerPosition.x, playerPosition.y, tilemapLevel, playerDirection, 2);
+            var tileInFrontOfPacman = Pacman.Helpers.Tilemap.getTileInfrontOf(playerPosition.x, playerPosition.y, tilemapLevel, playerDirection, 2);
             
             var tileWorldPos = new Phaser.Point(tileInFrontOfPacman.worldX, tileInFrontOfPacman.worldY);
             var redPosition = red.sprite.position.clone();
