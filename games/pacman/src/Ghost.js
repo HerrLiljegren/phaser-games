@@ -8,7 +8,6 @@ Pacman.Ghost = function(main, index) {
     this.sprite = this.game.add.sprite(32 * 11, 32 * 11, 'sprites');
     this.sprite.name = "ghost";
     this.game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
-    this.sprite.frame = 0;
 
     this.sprite.animations.add('weak', [12, 13], 4, true);
 
@@ -16,33 +15,41 @@ Pacman.Ghost = function(main, index) {
         case 0:
             this._addRedAnimations();
             this.homePosition = new Phaser.Point(6 * 32, 1 * 32);
+            this.targetPosition = new Phaser.Point(6 * 32, 1 * 32);
             this.startPosition = new Phaser.Point(32 * 9, 32 * 11);
-            this.name = "Red";
+            this.name = "Blinky";
             this.color = 'rgba(255,0,0,1)';
+            this.sprite.frame = 0;
             break;
 
         case 1:
             this._addYellowAnimations();
             this.homePosition = new Phaser.Point(21 * 32, 1 * 32);
+            this.targetPosition = new Phaser.Point(21 * 32, 1 * 32);
             this.startPosition = new Phaser.Point(32 * 14, 32 * 13);
-            this.name = "Yellow";
+            this.name = "Clyde";
             this.color = 'rgba(255,255,0,1)';
+            this.sprite.frame = 2;
             break;
 
         case 2:
             this._addPinkAnimations();
             this.homePosition = new Phaser.Point(8 * 32, 29 * 32);
+            this.targetPosition = new Phaser.Point(8 * 32, 29 * 32);
             this.startPosition = new Phaser.Point(32 * 13, 32 * 14);
             this.name = "Pinky";
             this.color = 'rgba(255,182,193,1)';
+            this.sprite.frame = 4;
             break;
 
         case 3:
             this._addBlueAnimations();
             this.homePosition = new Phaser.Point(19 * 32, 29 * 32);
+            this.targetPosition = new Phaser.Point(19 * 32, 29 * 32);
             this.startPosition = new Phaser.Point(32 * 14, 32 * 14);
-            this.name = "Blue";
+            this.name = "Inky";
             this.color = 'rgba(0,0,255,1)';
+            this.sprite.frame = 6;
             break;
     }
 
@@ -68,9 +75,9 @@ Pacman.Ghost = function(main, index) {
 Pacman.Ghost.prototype.update = function() {
 
     this.updateLevelStage();
-    
+
     //this.targetPosition = this.player.sprite.position;
-    if (!this.moving) {
+    if (!this.moving && Pacman.Ghost.Behaviour[this.name].active(this.game)) {
 
         this.game.add.tween(this.sprite)
             .to(this.tweenDirection, Pacman.Ghost.Behaviour[this.name].maxSpeed, Phaser.Easing.Linear.None, true)
@@ -97,18 +104,18 @@ Pacman.Ghost.prototype.update = function() {
             }
         }
 
-//playerPosition, playerDirection, homePosition, state, tilemapLevel
+        //playerPosition, playerDirection, homePosition, state, tilemapLevel
 
         switch (this.state) {
             case Pacman.Ghost.States.Scatter:
                 this.targetPosition = new Phaser.Point(this.homePosition.x, this.homePosition.y);
                 break;
             case Pacman.Ghost.States.Chase:
-                this.targetPosition = Pacman.Ghost.Behaviour[this.name].selectTarget(this.player.sprite.position, this.player.direction, this.homePosition, this.state, this.tilemap.level, this.main.ghosts);
+                this.targetPosition = Pacman.Ghost.Behaviour[this.name].selectTarget(this.player.sprite.position, this.player.direction, this.homePosition, this.state, this.tilemap.level, this.sprite.position, this.main.ghosts);
                 break;
         }
-        
-        
+
+
         /*var canISeeYou = this.isPlayerVisible(this.player.sprite);
         if (canISeeYou) {
             console.log(this.name, "sees player");
@@ -260,58 +267,72 @@ Pacman.Ghost.prototype._calculateMovement = function() {
 };
 
 Pacman.Ghost.Behaviour = {
-    "Red": {
+    "Blinky": { // Red
+        active: function(game) { return true; },
         iSeeYouTimer: 5,
         fov: 90,
         maxSpeed: 180,
         viewDistance: 300,
         calculateDirection: _calculateDirection,
-        selectTarget: _selectTarget
+        selectTarget: function(playerPosition, playerDirection, homePosition, state, tilemapLevel, ghostPosition, otherGhosts) {
+            return new Phaser.Point(playerPosition.x, playerPosition.y);
+        }
     },
-    "Blue": {
+    "Inky": { // Blue
+        active: function(game) { return game.score >= 30; },
         iSeeYouTimer: 5,
         fov: 90,
         maxSpeed: 180,
         viewDistance: 300,
         calculateDirection: _calculateDirection,
-        selectTarget: function(playerPosition, playerDirection, homePosition, state, tilemapLevel, otherGhosts) {
+        selectTarget: function(playerPosition, playerDirection, homePosition, state, tilemapLevel, ghostPosition, otherGhosts) {
             var red;
-            for(var i in otherGhosts) {
-                if(otherGhosts[i].name === "Red") red = otherGhosts[i];
+            for (var i in otherGhosts) {
+                if (otherGhosts[i].name === "Blinky") red = otherGhosts[i];
             }
-            
+
             var tileInFrontOfPacman = Pacman.Helpers.Tilemap.getTileInfrontOf(playerPosition.x, playerPosition.y, tilemapLevel, playerDirection, 2);
-            
+
             var tileWorldPos = new Phaser.Point(tileInFrontOfPacman.worldX, tileInFrontOfPacman.worldY);
             var redPosition = red.sprite.position.clone();
-            
+
             var newTarget = tileWorldPos.subtract(redPosition.x, redPosition.y);
             newTarget.multiply(2, 2);
             newTarget.add(redPosition.x, redPosition.y);
-            
-            
+
+
             return newTarget;
-            
         }
     },
-    "Yellow": {
+    "Clyde": { // Yellow
+        active: function(game) { return game.score >= 180 },
         iSeeYouTimer: 5,
         fov: 90,
         maxSpeed: 180,
         viewDistance: 300,
         calculateDirection: _calculateDirection,
-        selectTarget: function(playerPosition, playerDirection, homePosition, state, tilemapLevel) {
+        selectTarget: function(playerPosition, playerDirection, homePosition, state, tilemapLevel, ghostPosition, otherGhosts) {
+            
+            // Distance to the player by tiles
+            var distance = playerPosition.clone().subtract(ghostPosition.x, ghostPosition.y).getMagnitude()/32
+            
+            if(distance > 8)
+                return new Phaser.Point(playerPosition.x, playerPosition.y);
+            else
+                return new Phaser.Point(homePosition.x, homePosition.y);
+        }
+    },
+    "Pinky": { // Pink
+        active: function(game) { return true; },
+        iSeeYouTimer: 5,
+        fov: 90,
+        maxSpeed: 180,
+        viewDistance: 300,
+        calculateDirection: _calculateDirection,
+        selectTarget: function(playerPosition, playerDirection, homePosition, state, tilemapLevel, ghostPosition, otherGhosts) {
             var tile = Pacman.Helpers.Tilemap.getTileInfrontOf(playerPosition.x, playerPosition.y, tilemapLevel, playerDirection, 4);
             return new Phaser.Point(tile.worldX, tile.worldY);
         }
-    },
-    "Pinky": {
-        iSeeYouTimer: 5,
-        fov: 90,
-        maxSpeed: 180,
-        viewDistance: 300,
-        calculateDirection: _calculateDirection,
-        selectTarget: _selectTarget
     }
 };
 
@@ -355,19 +376,6 @@ Pacman.Ghost.Level = {
     }]
 };
 
-function _selectTarget(playerPosition, playerDirection, homePosition, state, tilemapLevel, otherGhosts) {
-    
-    switch(state) {
-        case Pacman.Ghost.States.Scatter:
-            var target = new Phaser.Point(homePosition.x, homePosition.y);
-            break;
-        case Pacman.Ghost.States.Chase:
-            var target = new Phaser.Point(playerPosition.x, playerPosition.y);
-            break;
-    }
-    
-    return target;
-}
 
 function _calculateDirection(validTiles, target) {
 
