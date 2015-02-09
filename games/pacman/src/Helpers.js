@@ -59,6 +59,36 @@ Pacman.Helpers = {
                 }
                 
                 return validTiles.length > 0 ? validTiles : null;
+        },
+        
+        getTileInfrontOf: function(x, y, layer, direction, offset) {
+            var tilemap = layer.map;
+            
+            x = Phaser.Math.snapToFloor(x, 32) / 32;
+            y = Phaser.Math.snapToFloor(y, 32) / 32;
+            
+            switch(direction) {
+                case Phaser.UP:
+                    y -= offset;
+                    break;
+                case Phaser.DOWN:
+                    y += offset;
+                    break;
+                case Phaser.LEFT:
+                    x -= offset;
+                    break;
+                case Phaser.RIGHT:
+                    x += offset;
+                    break;
+            }
+            
+            
+            x = Phaser.Math.clamp(x, 0, tilemap.width-1);
+            y = Phaser.Math.clamp(y, 0, tilemap.height-1);
+            
+            var tile = tilemap.getTile(x, y, layer, true)
+            if(!tile) debugger;
+            return tile;
         }
     }
 };

@@ -17,13 +17,13 @@ Pacman.Preloader.prototype = {
         this.load.tilemap('pacman-level', 'assets/pacman-level.json', null, Phaser.Tilemap.TILED_JSON);
         this.load.image('maptiles', 'assets/maptiles.png');
         
-        this.load.audio('beginning', 'assets/sfx/pacman_beginning.wav');
+        /*this.load.audio('beginning', 'assets/sfx/pacman_beginning.wav');
         this.load.audio('chomp', 'assets/sfx/pacman_chomp.wav');
         this.load.audio('death', 'assets/sfx/pacman_death.wav');
         this.load.audio('eatfruit', 'assets/sfx/pacman_eatfruit.wav');
         this.load.audio('eatghost', 'assets/sfx/pacman_eatghost.wav');
         this.load.audio('extrapac', 'assets/sfx/pacman_extrapac.wav');
-        this.load.audio('intermission', 'assets/sfx/pacman_intermission.wav');
+        this.load.audio('intermission', 'assets/sfx/pacman_intermission.wav');*/
     },
     
     create: function() {

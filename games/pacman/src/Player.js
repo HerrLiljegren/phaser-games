@@ -8,6 +8,7 @@ Pacman.Player = function(game) {
     this.sprite.name = "player";
     this.game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
     this.sprite.frame = 10;
+    this.direction = Phaser.RIGHT;
 
     this.sprite.animations.add('right', [10, 11], 4, true);
     this.sprite.animations.add('down', [24, 25], 4, true);
@@ -31,19 +32,23 @@ Pacman.Player.prototype.update = function () {
     if (this.game.movementKeys.left.isDown) {
         this.sprite.body.velocity.x = -this.maxSpeed;
         this.sprite.animations.play('left');
+        this.direction = Phaser.LEFT;
     }
     else if (this.game.movementKeys.right.isDown) {
         this.sprite.body.velocity.x = this.maxSpeed;
         this.sprite.animations.play('right');
+        this.direction = Phaser.RIGHT;
     }
     
     if (this.game.movementKeys.up.isDown) {
         this.sprite.body.velocity.y = -this.maxSpeed;
         this.sprite.animations.play('up');
+        this.direction = Phaser.UP;
     }
     else if (this.game.movementKeys.down.isDown) {
         this.sprite.body.velocity.y = this.maxSpeed;
         this.sprite.animations.play('down');
+        this.direction = Phaser.DOWN;
     }
     
     if (!this.game.movementKeys.left.isDown && !this.game.movementKeys.right.isDown && !this.game.movementKeys.up.isDown && !this.game.movementKeys.down.isDown) {

@@ -46,7 +46,7 @@ Pacman.Main.prototype = {
         
         
         for (var i = 0; i < 4; i++) {
-            var ghost = new Pacman.Ghost(this.game, this.player, i);
+            var ghost = new Pacman.Ghost(this, i);
             ghost.setTilemap(this.tilemap);
 
             this.ghosts.push(ghost);

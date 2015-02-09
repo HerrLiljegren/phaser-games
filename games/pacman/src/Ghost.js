@@ -1,7 +1,8 @@
 'use strict';
-Pacman.Ghost = function(game, player, index) {
-    this.game = game;
-    this.player = player;
+Pacman.Ghost = function(main, index) {
+    this.main = main;
+    this.game = main.game;
+    this.player = main.player;
     this.tilemap = null;
 
     this.sprite = this.game.add.sprite(32 * 11, 32 * 11, 'sprites');
@@ -17,6 +18,7 @@ Pacman.Ghost = function(game, player, index) {
             this.homePosition = new Phaser.Point(6 * 32, 1 * 32);
             this.startPosition = new Phaser.Point(32 * 9, 32 * 11);
             this.name = "Red";
+            this.color = 'rgba(255,0,0,1)';
             break;
 
         case 1:
@@ -24,6 +26,7 @@ Pacman.Ghost = function(game, player, index) {
             this.homePosition = new Phaser.Point(21 * 32, 1 * 32);
             this.startPosition = new Phaser.Point(32 * 14, 32 * 13);
             this.name = "Yellow";
+            this.color = 'rgba(255,255,0,1)';
             break;
 
         case 2:
@@ -31,6 +34,7 @@ Pacman.Ghost = function(game, player, index) {
             this.homePosition = new Phaser.Point(8 * 32, 29 * 32);
             this.startPosition = new Phaser.Point(32 * 13, 32 * 14);
             this.name = "Pinky";
+            this.color = 'rgba(255,182,193,1)';
             break;
 
         case 3:
@@ -38,26 +42,33 @@ Pacman.Ghost = function(game, player, index) {
             this.homePosition = new Phaser.Point(19 * 32, 29 * 32);
             this.startPosition = new Phaser.Point(32 * 14, 32 * 14);
             this.name = "Blue";
+            this.color = 'rgba(0,0,255,1)';
             break;
     }
 
     this.sprite.reset(this.startPosition.x, this.startPosition.y);
     this.tweenDirection = new Phaser.Point(this.startPosition.x, this.startPosition.y);
-    this.targetPosition = this.homePosition;
+    this.state = Pacman.Ghost.States.Chase;
 
 
 
 
-    
+
     this.direction = Phaser.RIGHT;
+    this.directionVector = new Phaser.Point();
     this.tweenDirection;
     this.moving = false;
+    this.lastTimeISawPlayer = 0;
+    this.activeLevelStage = 0;
+    this.activeLevelStageDirty = true;
     //this.sprite.body.velocity.y = -this.maxSpeed;
     //this.sprite.animations.play('right');
 }
 
 Pacman.Ghost.prototype.update = function() {
 
+    this.updateLevelStage();
+    
     //this.targetPosition = this.player.sprite.position;
     if (!this.moving) {
 
@@ -86,14 +97,26 @@ Pacman.Ghost.prototype.update = function() {
             }
         }
 
-        var canISeeYou = this.isPlayerVisible(this.player.sprite);
+//playerPosition, playerDirection, homePosition, state, tilemapLevel
+
+        switch (this.state) {
+            case Pacman.Ghost.States.Scatter:
+                this.targetPosition = new Phaser.Point(this.homePosition.x, this.homePosition.y);
+                break;
+            case Pacman.Ghost.States.Chase:
+                this.targetPosition = Pacman.Ghost.Behaviour[this.name].selectTarget(this.player.sprite.position, this.player.direction, this.homePosition, this.state, this.tilemap.level, this.main.ghosts);
+                break;
+        }
+        
+        
+        /*var canISeeYou = this.isPlayerVisible(this.player.sprite);
         if (canISeeYou) {
             console.log(this.name, "sees player");
             this.targetPosition = this.player.sprite.position;
         }
         else {
             this.targetPosition = this.homePosition;
-        }
+        }*/
         this.moving = true;
     }
 };
@@ -103,14 +126,86 @@ Pacman.Ghost.prototype.render = function() {
 
     this.game.debug.spriteInfo(this.sprite, 32 * 28, 32);
 
+    //var tile = Pacman.Helpers.Tilemap.getTileInfrontOf(this.player.sprite.position.x, this.player.sprite.position.y, this.tilemap.level, this.player.direction, 4)
+    //this.game.debug.geom(new Phaser.Rectangle(tile.x*32, tile.y*32, 32, 32));
 
-    var c = new Phaser.Circle(this.sprite.body.center.x, this.sprite.body.center.y, Pacman.Ghost.Behaviour[this.name].viewDistance);
-    this.game.debug.geom(c);
+    //var c = new Phaser.Circle(this.sprite.body.center.x, this.sprite.body.center.y, Pacman.Ghost.Behaviour[this.name].viewDistance);
+    //this.game.debug.geom(c);
+    this.game.debug.geom(new Phaser.Rectangle(this.targetPosition.x, this.targetPosition.y, 32, 32), this.color);
+    return;
+    switch (this.tweenDirection.direction) {
+        case Phaser.UP:
+
+            Phaser.extensions.debugDrawFovXY(this.game, this.sprite.body.center.x, this.sprite.body.center.y, this.tweenDirection.x + 16, this.tweenDirection.y, Pacman.Ghost.Behaviour[this.name].fov, Pacman.Ghost.Behaviour[this.name].viewDistance);
+            break;
+        case Phaser.DOWN:
+
+            Phaser.extensions.debugDrawFovXY(this.game, this.sprite.body.center.x, this.sprite.body.center.y, this.tweenDirection.x + 16, this.tweenDirection.y + 32, Pacman.Ghost.Behaviour[this.name].fov, Pacman.Ghost.Behaviour[this.name].viewDistance);
+            break;
+        case Phaser.LEFT:
+
+            Phaser.extensions.debugDrawFovXY(this.game, this.sprite.body.center.x, this.sprite.body.center.y, this.tweenDirection.x, this.tweenDirection.y + 16, Pacman.Ghost.Behaviour[this.name].fov, Pacman.Ghost.Behaviour[this.name].viewDistance);
+            break;
+        case Phaser.RIGHT:
+            Phaser.extensions.debugDrawFovXY(this.game, this.sprite.body.center.x, this.sprite.body.center.y, this.tweenDirection.x + 32, this.tweenDirection.y + 16, Pacman.Ghost.Behaviour[this.name].fov, Pacman.Ghost.Behaviour[this.name].viewDistance);
+            break;
+    }
+
 };
 
 Pacman.Ghost.prototype.isPlayerVisible = function(player) {
+    return false;
+    switch (this.tweenDirection.direction) {
+        case Phaser.UP:
+            this.directionVector = new Phaser.Point(this.tweenDirection.x + 16, this.tweenDirection.y).subtract(this.sprite.body.center.x, this.sprite.body.center.y).normalize();
+            break;
+        case Phaser.DOWN:
+            this.directionVector = new Phaser.Point(this.tweenDirection.x + 16, this.tweenDirection.y).subtract(this.sprite.body.center.x, this.sprite.body.center.y).normalize();
+            break;
+        case Phaser.LEFT:
+            this.directionVector = new Phaser.Point(this.tweenDirection.x, this.tweenDirection.y - 16).subtract(this.sprite.body.center.x, this.sprite.body.center.y).normalize();
+            break;
+        case Phaser.RIGHT:
+            this.directionVector = new Phaser.Point(this.tweenDirection.x, this.tweenDirection.y - 16).subtract(this.sprite.body.center.x, this.sprite.body.center.y).normalize();
+            break;
+    }
+
     var distance = Phaser.Math.distance(this.sprite.body.center.x, this.sprite.body.center.y, player.body.center.x, player.body.center.y);
-    return distance < 300;
+
+
+    var inFov = Phaser.extensions.isTargetVisibleXY(this.sprite.body.center.x, this.sprite.body.center.y, this.directionVector, player.body.center.x, player.body.center.y, Pacman.Ghost.Behaviour[this.name].fov);
+
+
+
+    var visible = inFov && distance < Pacman.Ghost.Behaviour[this.name].viewDistance;
+
+
+    if (visible) {
+        this.lastTimeISawPlayer = this.game.time.now;
+    }
+
+    var iSeeYouTimer = Pacman.Ghost.Behaviour[this.name].iSeeYouTimer * 1000;
+    console.log(this.name, this.game.time.now + iSeeYouTimer, " < ", this.lastTimeISawPlayer)
+
+    return visible || this.game.time.now < this.lastTimeISawPlayer + iSeeYouTimer;
+};
+
+Pacman.Ghost.prototype.updateLevelStage = function() {
+    if (this.activeLevelStageDirty) {
+        this.activeLevelStageDirty = false;
+        var stage = Pacman.Ghost.Level.One[this.activeLevelStage];
+        this.state = stage.State;
+
+        console.log(this.name, "Updated level state", stage.State, stage.Timelimit);
+
+        if (stage.Timelimit > 0) {
+            this.game.time.events.add(Phaser.Timer.SECOND * stage.Timelimit, function() {
+                this.activeLevelStageDirty = true;
+                this.activeLevelStage++;
+            }, this);
+        }
+
+    }
 };
 
 Pacman.Ghost.prototype._calculateMovement = function() {
@@ -166,43 +261,112 @@ Pacman.Ghost.prototype._calculateMovement = function() {
 
 Pacman.Ghost.Behaviour = {
     "Red": {
-        maxSpeed: 250,
-        viewDistance: 600,
-        calculateDirection: _calculateDirection
+        iSeeYouTimer: 5,
+        fov: 90,
+        maxSpeed: 180,
+        viewDistance: 300,
+        calculateDirection: _calculateDirection,
+        selectTarget: _selectTarget
     },
     "Blue": {
-        maxSpeed: 250,
+        iSeeYouTimer: 5,
+        fov: 90,
+        maxSpeed: 180,
         viewDistance: 300,
-        calculateDirection: function(validTiles, target) {
-            var dist = 0; // egentligen: widht + height
-            var idx = -1;
-            for (var i = 0, l = validTiles.length; i < l; i++) {
-                var newDist = Math.abs(validTiles[i].tile.worldX - target.x) + Math.abs(validTiles[i].tile.worldY - target.y);
-
-                if (newDist < dist)
-                    continue;
-                dist = newDist;
-                idx = i;
+        calculateDirection: _calculateDirection,
+        selectTarget: function(playerPosition, playerDirection, homePosition, state, tilemapLevel, otherGhosts) {
+            var red;
+            for(var i in otherGhosts) {
+                if(otherGhosts[i].name === "Red") red = otherGhosts[i];
             }
-
-
-            return {
-                direction: validTiles[idx].direction,
-                x: validTiles[idx].tile.worldX,
-                y: validTiles[idx].tile.worldY
-            }
+            
+            var tileInFroqntOfPacman = Pacman.Helpers.Tilemap.getTileInfrontOf(playerPosition.x, playerPosition.y, tilemapLevel, playerDirection, 2);
+            
+            var tileWorldPos = new Phaser.Point(tileInFrontOfPacman.worldX, tileInFrontOfPacman.worldY);
+            var redPosition = red.sprite.position.clone();
+            
+            var newTarget = tileWorldPos.subtract(redPosition.x, redPosition.y);
+            newTarget.multiply(2, 2);
+            newTarget.add(redPosition.x, redPosition.y);
+            
+            
+            return newTarget;
+            
         }
     },
     "Yellow": {
-        maxSpeed: 250,
+        iSeeYouTimer: 5,
+        fov: 90,
+        maxSpeed: 180,
         viewDistance: 300,
-        calculateDirection: _calculateDirection
+        calculateDirection: _calculateDirection,
+        selectTarget: function(playerPosition, playerDirection, homePosition, state, tilemapLevel) {
+            var tile = Pacman.Helpers.Tilemap.getTileInfrontOf(playerPosition.x, playerPosition.y, tilemapLevel, playerDirection, 4);
+            return new Phaser.Point(tile.worldX, tile.worldY);
+        }
     },
     "Pinky": {
-        maxSpeed: 250,
+        iSeeYouTimer: 5,
+        fov: 90,
+        maxSpeed: 180,
         viewDistance: 300,
-        calculateDirection: _calculateDirection
+        calculateDirection: _calculateDirection,
+        selectTarget: _selectTarget
     }
+};
+
+Pacman.Ghost.States = {
+    Scatter: "SCATTER",
+    Chase: "CHASE",
+    Scared: "SCARED"
+};
+
+/*
+Scatter for 7 seconds, then Chase for 20 seconds.
+Scatter for 7 seconds, then Chase for 20 seconds.
+Scatter for 5 seconds, then Chase for 20 seconds.
+Scatter for 5 seconds, then switch to Chase mode permanently.
+*/
+Pacman.Ghost.Level = {
+    One: [{
+        State: Pacman.Ghost.States.Scatter,
+        Timelimit: 1
+    }, {
+        State: Pacman.Ghost.States.Chase,
+        Timelimit: 20
+    }, {
+        State: Pacman.Ghost.States.Scatter,
+        Timelimit: 7
+    }, {
+        State: Pacman.Ghost.States.Chase,
+        Timelimit: 20
+    }, {
+        State: Pacman.Ghost.States.Scatter,
+        Timelimit: 5
+    }, {
+        State: Pacman.Ghost.States.Chase,
+        Timelimit: 20
+    }, {
+        State: Pacman.Ghost.States.Scatter,
+        Timelimit: 5
+    }, {
+        State: Pacman.Ghost.States.Chase,
+        Timelimit: -1
+    }]
+};
+
+function _selectTarget(playerPosition, playerDirection, homePosition, state, tilemapLevel, otherGhosts) {
+    
+    switch(state) {
+        case Pacman.Ghost.States.Scatter:
+            var target = new Phaser.Point(homePosition.x, homePosition.y);
+            break;
+        case Pacman.Ghost.States.Chase:
+            var target = new Phaser.Point(playerPosition.x, playerPosition.y);
+            break;
+    }
+    
+    return target;
 }
 
 function _calculateDirection(validTiles, target) {
@@ -233,7 +397,7 @@ function _calculateDirection(validTiles, target) {
 
     // ogogogog fastre!!!1!! Vad tror du om att istället för att skicka in validDirections skicka in dom tile-indexarna han kan gå till?
     // Sen kan du kolla alla tiles och se vilken som är närmast spelaren. :)
-};
+}
 
 
 Pacman.Ghost.prototype._addRedAnimations = function() {
