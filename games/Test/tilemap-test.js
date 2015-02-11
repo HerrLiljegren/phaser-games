@@ -77,10 +77,10 @@ function generateBinaryTilemap(game, width, height) {
         var room = generateRoom(offsetX, offsetY, roomWidth, roomHeight, rooms, tilemap, width);
         if (room == null) continue;
 
-        /*if (r > 0) {
-            generateHorizontalCorridor(room.centerX, rooms[r - 1].centerX, room.centerY);
-            generateVerticalCorridor(rooms[r - 1].centerY, room.centerY, rooms[r - 1].centerX);
-        }*/
+        if (r > 0) {
+            generateHorizontalCorridor(room.centerX, rooms[r - 1].centerX, room.centerY, tilemap, width);
+            generateVerticalCorridor(rooms[r - 1].centerY, room.centerY, rooms[r - 1].centerX, tilemap, width);
+        }
 
         rooms.push(room);
         r++;
@@ -119,19 +119,19 @@ function generateRoom(offsetX, offsetY, width, height, rooms, tilemap, tilemapWi
     return room;
 }
 
-function generateHorizontalCorridor(startX, endX, y) {
+function generateHorizontalCorridor(startX, endX, y, tilemap, tilemapWidth) {
     var sx = Phaser.Math.min(startX, endX);
     var ex = Phaser.Math.max(startX, endX);
     for (var x = sx; x <= ex; x++) {
-        map.putTile(11, x, y);
+        tilemap[getIndex(x, y, tilemapWidth)] = 11;
     }
 }
 
-function generateVerticalCorridor(startY, endY, x) {
+function generateVerticalCorridor(startY, endY, x, tilemap, tilemapWidth) {
     var sy = Phaser.Math.min(startY, endY);
     var ey = Phaser.Math.max(startY, endY);
     for (var y = sy; y <= ey; y++) {
-        map.putTile(11, x, y);
+        tilemap[getIndex(x, y, tilemapWidth)] = 11;
     }
 }
 
