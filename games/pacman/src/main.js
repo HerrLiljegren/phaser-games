@@ -4,5 +4,6 @@
     game.state.add('Preloader', Pacman.Preloader);
     game.state.add('Menu', Pacman.Menu);
     game.state.add('Game', Pacman.Main);
+    game.state.add('GameOver', Pacman.GameOver);
     game.state.start('Boot');
 })();

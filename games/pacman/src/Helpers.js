@@ -22,7 +22,14 @@ Pacman.Helpers = {
             };
         },
 
-        getValidDirections: function(direction, passableTiles, surroundingTiles) {
+        getValidDirections: function(direction, passableTiles, surroundingTiles, reverse) {
+            if(reverse) {
+                if(direction === Phaser.DOWN) direction = Phaser.UP;
+                if(direction === Phaser.UP) direction = Phaser.DOWN;
+                if(direction === Phaser.RIGHT) direction = Phaser.LEFT;
+                if(direction === Phaser.LEFT) direction = Phaser.RIGHT;
+            }
+            
             return {
                 canMoveUp: direction !== Phaser.DOWN && surroundingTiles.up && passableTiles.indexOf(surroundingTiles.up.index) > -1,
                 canMoveDown: direction !== Phaser.UP && surroundingTiles.down && passableTiles.indexOf(surroundingTiles.down.index) > -1,

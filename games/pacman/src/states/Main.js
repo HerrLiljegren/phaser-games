@@ -3,16 +3,18 @@
 var Pacman = Pacman || {};
 
 Pacman.Main = function(game) {
-        this.game = game,
-        this.tilemap = null,
-        this.player = null,
-        this.text = "",
-        this.ghosts = [];
+    this.game = game;
 };
 
 Pacman.Main.prototype = {
     preload: function() {
         console.log('Main.preload');
+    
+            
+        this.tilemap = null,
+        this.player = null,
+        this.text = "",
+        this.ghosts = [];
         
     },
     create: function() {
@@ -73,7 +75,7 @@ Pacman.Main.prototype = {
         for(var i in this.ghosts) {
             this.game.physics.arcade.collide(this.ghosts[i].sprite, this.tilemap.level, this.ghosts[i].wallCollision);
             this.game.physics.arcade.overlap(this.ghosts[i].sprite, this.tilemap.pills, this.ghosts[i].route);
-            this.game.physics.arcade.overlap(this.ghosts[i].sprite, this.player.sprite, this.player.die, null, this.player);
+            this.game.physics.arcade.overlap(this.ghosts[i].sprite, this.player.sprite, this.ghostPlayerCollition, null, this);
         }
 
 
@@ -101,7 +103,7 @@ Pacman.Main.prototype = {
         this.text.setText(this.getScoreBoardText());
 
         if (this.game.gameOver) {
-            console.log("GAME OVER!");
+            this.game.state.start('GameOver');
         }
 
     },
@@ -117,6 +119,18 @@ Pacman.Main.prototype = {
         this.game.debug.text(this.game.input.activePointer.position, this.game.input.activePointer.x, this.game.input.activePointer.y);
     },
 
+    ghostPlayerCollition: function(ghost, player) {
+        if(player.me.isSuper) {
+            ghost.me.die();
+        } else {
+            player.me.die();
+            for(var i in this.ghosts){
+                var ghost = this.ghosts[i];
+                ghost.reset();
+            }
+        }
+    },
+    
     getScoreBoardText: function() {
         var minutes = Math.floor(this.game.time.totalElapsedSeconds() / 60);
         var seconds = (this.game.time.totalElapsedSeconds() - minutes * 60).toFixed(3);

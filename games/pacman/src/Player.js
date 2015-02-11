@@ -6,6 +6,7 @@ Pacman.Player = function(game) {
     this.startY = 32 * 17;
     this.sprite = this.game.add.sprite(this.startX, this.startY, 'sprites');
     this.sprite.name = "player";
+    this.sprite.me = this;
     this.game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
     this.sprite.frame = 10;
     this.direction = Phaser.RIGHT;

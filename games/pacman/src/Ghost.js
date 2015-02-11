@@ -7,11 +7,12 @@ Pacman.Ghost = function(main, index) {
 
     this.sprite = this.game.add.sprite(32 * 11, 32 * 11, 'sprites');
     this.sprite.name = "ghost";
+    this.sprite.me = this;
     this.game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
 
     this.sprite.animations.add('weak', [12, 13], 4, true);
-
-    switch (index) {
+    this.index = index;
+    switch (this.index) {
         case 0:
             this._addRedAnimations();
             this.homePosition = new Phaser.Point(6 * 32, 1 * 32);
@@ -53,13 +54,9 @@ Pacman.Ghost = function(main, index) {
             break;
     }
 
-    this.sprite.reset(this.startPosition.x, this.startPosition.y);
-    this.tweenDirection = new Phaser.Point(this.startPosition.x, this.startPosition.y);
-    this.state = Pacman.Ghost.States.Chase;
-
-
-
-
+    this.reset();
+    this.respawnPosition = new Phaser.Point(32*13,32*14);
+    this.activeTween;
 
     this.direction = Phaser.RIGHT;
     this.directionVector = new Phaser.Point();
@@ -68,6 +65,8 @@ Pacman.Ghost = function(main, index) {
     this.lastTimeISawPlayer = 0;
     this.activeLevelStage = 0;
     this.activeLevelStageDirty = true;
+    this.playerWentSuper = false;
+    this.currentStageTimer;
     //this.sprite.body.velocity.y = -this.maxSpeed;
     //this.sprite.animations.play('right');
 }
@@ -79,8 +78,8 @@ Pacman.Ghost.prototype.update = function() {
     //this.targetPosition = this.player.sprite.position;
     if (!this.moving && Pacman.Ghost.Behaviour[this.name].active(this.game)) {
 
-        this.game.add.tween(this.sprite)
-            .to(this.tweenDirection, Pacman.Ghost.Behaviour[this.name].maxSpeed, Phaser.Easing.Linear.None, true)
+        this.activeTween = this.game.add.tween(this.sprite);
+        this.activeTween.to(this.tweenDirection, Pacman.Ghost.Behaviour[this.name].maxSpeed, Phaser.Easing.Linear.None, true)
             .onComplete.add(this._calculateMovement, this);
 
 
@@ -113,6 +112,8 @@ Pacman.Ghost.prototype.update = function() {
             case Pacman.Ghost.States.Chase:
                 this.targetPosition = Pacman.Ghost.Behaviour[this.name].selectTarget(this.player.sprite.position, this.player.direction, this.homePosition, this.state, this.tilemap.level, this.sprite.position, this.main.ghosts);
                 break;
+                case Pacman.Ghost.States.Scared:
+                    break;
         }
 
 
@@ -160,6 +161,20 @@ Pacman.Ghost.prototype.render = function() {
 
 };
 
+Pacman.Ghost.prototype.die = function(){
+    this.tweenDirection = this.respawnPosition;
+    this.moving = false;
+    if(this.activeTween) this.activeTween.stop();
+};
+
+Pacman.Ghost.prototype.reset = function() {
+    this.moving = false;
+    if(this.activeTween) this.activeTween.stop();
+    this.sprite.reset(this.startPosition.x, this.startPosition.y);
+    this.tweenDirection = new Phaser.Point(this.startPosition.x, this.startPosition.y);
+    //this.state = Pacman.Ghost.States.Chase;
+}
+
 Pacman.Ghost.prototype.isPlayerVisible = function(player) {
     return false;
     switch (this.tweenDirection.direction) {
@@ -206,7 +221,7 @@ Pacman.Ghost.prototype.updateLevelStage = function() {
         console.log(this.name, "Updated level state", stage.State, stage.Timelimit);
 
         if (stage.Timelimit > 0) {
-            this.game.time.events.add(Phaser.Timer.SECOND * stage.Timelimit, function() {
+            this.currentStageTimer = this.game.time.events.add(Phaser.Timer.SECOND * stage.Timelimit, function() {
                 this.activeLevelStageDirty = true;
                 this.activeLevelStage++;
             }, this);
@@ -221,9 +236,11 @@ Pacman.Ghost.prototype._calculateMovement = function() {
 
     var tile = new Phaser.Point(this.sprite.x / 32, this.sprite.y / 32);
     var surroundingTiles = Pacman.Helpers.Tilemap.getSurroundingTiles(this.tilemap.level, tile.x, tile.y);
-    var validDirections = Pacman.Helpers.Tilemap.getValidDirections(this.direction, this.tilemap.passableTiles, surroundingTiles);
+    var validDirections = Pacman.Helpers.Tilemap.getValidDirections(this.direction, this.tilemap.passableTiles, surroundingTiles, this.reverse);
     var validTiles = Pacman.Helpers.Tilemap.getValidTilesToMoveTo(validDirections, surroundingTiles);
 
+    if(this.reverse) this.reverse = false;
+    
     if (validTiles) {
         this.tweenDirection = Pacman.Ghost.Behaviour[this.name].calculateDirection(validTiles, this.targetPosition);
         this.direction = this.tweenDirection.direction;
