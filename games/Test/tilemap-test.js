@@ -26,6 +26,12 @@ function create() {
 
     cursors = game.input.keyboard.createCursorKeys();
 
+    generateBinaryTilemap(40, 40);
+    
+    
+    
+    return;
+
     //  Creates a blank tilemap
     map = game.add.tilemap();
 
@@ -84,7 +90,18 @@ function create() {
 
 }
 
-function generateRoom(offsetX, offsetY, width, height, rooms) {
+function generateBinaryTilemap(width, height) {
+    var tilemap = Array.apply(null, new Array(width * height)).map(Number.prototype.valueOf,0);
+    debugger;
+    generateRoom(0, 0, 10, 10, [], tilemap, width);
+    
+}
+
+function getIndex(x, y, width) {
+    return x * width + y;
+}
+
+function generateRoom(offsetX, offsetY, width, height, rooms, tilemap, tilemapWidth) {
     var room = new Room(offsetX, offsetY, width, height);
 
     for (var i in rooms) {
@@ -93,42 +110,7 @@ function generateRoom(offsetX, offsetY, width, height, rooms) {
     var tileIndex = 0;
     for (var y = 0; y < height; y++) {
         for (var x = 0; x < width; x++) {
-            if (x == 0 && y == 0) { // Upper Left Corner
-                tileIndex = 0;
-            }
-            else if (x == width - 1 && y == 0) { // Upper Right Corner
-                tileIndex = 2;
-            }
-            else if (y == height - 1 && x == 0) { // Bottom Left Corner
-                tileIndex = 20;
-            }
-            else if (y == height - 1 && x == width - 1) { // Bottom Right Corner
-                tileIndex = 22;
-            }
-            else if (x > 0 && x < width - 1 && y > 0 && y < height - 1) { // Floor
-                tileIndex = 11
-            }
-            else if (x == 0) { // Left Wall 
-                tileIndex = 10;
-            }
-            else if (x == width - 1) { // Right Wall 
-                tileIndex = 12;
-            }
-            else if (y == 0) { // Upper Wall
-                tileIndex = 1;
-            }
-            else if (y == height - 1) { // Bottom Wall
-                tileIndex = 21;
-            }
-            else {
-                tileIndex = -1;
-            }
-
-            if (tileIndex > -1) tileIndex = 11 // Floor hack
-
-            var tile = map.getTile(x + offsetX, y + offsetY, layer1);
-            if (tile == null || (tile != null && tile.index == -1));
-            map.putTile(tileIndex, x + offsetX, y + offsetY, layer1);
+            tilemap[getIndex(x, y, tilemapWidth)] = 1;
         }
     }
 
