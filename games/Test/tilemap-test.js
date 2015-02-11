@@ -9,11 +9,13 @@ var game = new Phaser.Game(1280, 720, Phaser.CANVAS, 'phaser-example', {
 var cursors, map, layer1, rooms = [];;
 
 function preload() {
+    var csv = generateBinaryTilemap(game, 40, 40);
+    game.load.tilemap('map', null, csv, Phaser.Tilemap.CSV);
     game.load.image('tilesheet', '../pacman/assets/maptiles.png');
 }
 
 function create() {
-    game.stage.backgroundColor = '#84D455';
+    game.stage.backgroundColor = '#8ADA55';
 
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
@@ -26,27 +28,33 @@ function create() {
 
     cursors = game.input.keyboard.createCursorKeys();
 
-    generateBinaryTilemap(40, 40);
     
     
     
-    return;
-
-    //  Creates a blank tilemap
-    map = game.add.tilemap();
-
-    //  Add a Tileset image to the map
+    map = game.add.tilemap('map', 32, 32);
     map.addTilesetImage('tilesheet');
-
-
-    layer1 = map.create('level1', 40, 40, 32, 32);
-    //layer1.scrollFactorX = 0.5;
-    //layer1.scrollFactorY = 0.5;
-
-    //  Resize the world
+    layer1 = map.createLayer(0);
     layer1.resizeWorld();
+    
+    
+    
+    
+   
 
-    var roomSize = {
+    // map.forEach(function(tile) {
+    //     debugger;
+    //     var tileAbove = map.getTileAbove(map.layer1, tile.x, tile.y);
+    //     if(tileAbove) { 
+    //         debugger;
+    //     }
+    // }, 0, 0, map.width, map.height, map.layer1);
+
+}
+
+function generateBinaryTilemap(game, width, height) {
+    var tilemap = Array.apply(null, new Array(width * height)).map(Number.prototype.valueOf,-1);
+    
+     var roomSize = {
         min: {
             width: 5,
             height: 5
@@ -61,39 +69,33 @@ function create() {
     var maxRooms = 20;
     for (var i = 0, r = 0; r < maxRooms && i < maxIterations; i++) {
         var
-            offsetX = game.rnd.integerInRange(2, map.width - roomSize.max.width - 2),
-            offsetY = game.rnd.integerInRange(2, map.height - roomSize.max.height - 2),
-            width = game.rnd.integerInRange(roomSize.min.width, roomSize.max.width),
-            height = game.rnd.integerInRange(roomSize.min.height, roomSize.max.height);
+            offsetX = game.rnd.integerInRange(2, width - roomSize.max.width - 2),
+            offsetY = game.rnd.integerInRange(2, height - roomSize.max.height - 2),
+            roomWidth = game.rnd.integerInRange(roomSize.min.width, roomSize.max.width),
+            roomHeight = game.rnd.integerInRange(roomSize.min.height, roomSize.max.height);
 
-        var room = generateRoom(offsetX, offsetY, width, height, rooms);
+        var room = generateRoom(offsetX, offsetY, roomWidth, roomHeight, rooms, tilemap, width);
         if (room == null) continue;
 
-        if (r > 0) {
+        /*if (r > 0) {
             generateHorizontalCorridor(room.centerX, rooms[r - 1].centerX, room.centerY);
             generateVerticalCorridor(rooms[r - 1].centerY, room.centerY, rooms[r - 1].centerX);
-        }
+        }*/
 
         rooms.push(room);
         r++;
     }
 
     console.log("Rooms: ", r);
-
-    // map.forEach(function(tile) {
-    //     debugger;
-    //     var tileAbove = map.getTileAbove(map.layer1, tile.x, tile.y);
-    //     if(tileAbove) { 
-    //         debugger;
-    //     }
-    // }, 0, 0, map.width, map.height, map.layer1);
-
-}
-
-function generateBinaryTilemap(width, height) {
-    var tilemap = Array.apply(null, new Array(width * height)).map(Number.prototype.valueOf,0);
-    debugger;
-    generateRoom(0, 0, 10, 10, [], tilemap, width);
+    
+    
+    
+    var csv = "";
+    for(var i = 0; i < height; i++) {
+        csv += tilemap.slice(i*height, width*(i+1)).join()+"\n"
+    }
+    
+    return csv;
     
 }
 
@@ -110,7 +112,7 @@ function generateRoom(offsetX, offsetY, width, height, rooms, tilemap, tilemapWi
     var tileIndex = 0;
     for (var y = 0; y < height; y++) {
         for (var x = 0; x < width; x++) {
-            tilemap[getIndex(x, y, tilemapWidth)] = 1;
+            tilemap[getIndex(x + offsetX, y + offsetY, tilemapWidth)] = 11;
         }
     }
 
@@ -157,13 +159,13 @@ function render() {
     //     }
     // }
     
-    var pointer = game.input.activePointer.position;
+    /*var pointer = game.input.activePointer.position;
     
     var tile = map.getTileWorldXY(pointer.x, pointer.y, 32, 32, layer1);
     
     if(tile) {
         game.debug.text("Tile " + tile.index + " [" + tile.x + ", " + tile.y + "]", pointer.x, pointer.y)
-    }
+    }*/
     
     game.debug.text("Arrowkeys", 32, 32, 'rgba(0,0,0,1)');
 }
