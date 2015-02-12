@@ -1,3 +1,4 @@
+/* global Phaser:true */
 'use strict';
 Pacman.Tilemap = function(game, player) {
     this.game = game;
