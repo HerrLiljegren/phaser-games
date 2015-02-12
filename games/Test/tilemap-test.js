@@ -6,12 +6,15 @@ var game = new Phaser.Game(1280, 720, Phaser.CANVAS, 'phaser-example', {
     update: update
 });
 
-var cursors, map, layer1, rooms = [];;
+var cursors, map, layer1, rooms = [], csv, tilemapGenerator;
 
 function preload() {
-    var csv = generateBinaryTilemap(game, 40, 40);
-    game.load.tilemap('map', null, csv, Phaser.Tilemap.CSV);
-    game.load.image('tilesheet', '../pacman/assets/maptiles.png');
+    tilemapGenerator = new TilemapGenerator();
+    tilemapGenerator.create(40*3,40*3,32,32);
+    
+    
+    game.load.tilemap('map', null, tilemapGenerator.csv, Phaser.Tilemap.CSV);
+    game.load.image('tilesheet', 'tilemapStructure2.png');
 }
 
 function create() {
@@ -51,89 +54,11 @@ function create() {
 
 }
 
-function generateBinaryTilemap(game, width, height) {
-    var tilemap = Array.apply(null, new Array(width * height)).map(Number.prototype.valueOf,-1);
-    
-     var roomSize = {
-        min: {
-            width: 5,
-            height: 5
-        },
-        max: {
-            width: 10,
-            height: 10
-        }
-    };
-    
-    var maxIterations = 100;
-    var maxRooms = 20;
-    for (var i = 0, r = 0; r < maxRooms && i < maxIterations; i++) {
-        var
-            offsetX = game.rnd.integerInRange(2, width - roomSize.max.width - 2),
-            offsetY = game.rnd.integerInRange(2, height - roomSize.max.height - 2),
-            roomWidth = game.rnd.integerInRange(roomSize.min.width, roomSize.max.width),
-            roomHeight = game.rnd.integerInRange(roomSize.min.height, roomSize.max.height);
 
-        var room = generateRoom(offsetX, offsetY, roomWidth, roomHeight, rooms, tilemap, width);
-        if (room == null) continue;
 
-        if (r > 0) {
-            generateHorizontalCorridor(room.centerX, rooms[r - 1].centerX, room.centerY, tilemap, width);
-            generateVerticalCorridor(rooms[r - 1].centerY, room.centerY, rooms[r - 1].centerX, tilemap, width);
-        }
 
-        rooms.push(room);
-        r++;
-    }
 
-    console.log("Rooms: ", r);
-    
-    
-    
-    var csv = "";
-    for(var i = 0; i < height; i++) {
-        csv += tilemap.slice(i*height, width*(i+1)).join()+"\n"
-    }
-    
-    return csv;
-    
-}
 
-function getIndex(x, y, width) {
-    return x * width + y;
-}
-
-function generateRoom(offsetX, offsetY, width, height, rooms, tilemap, tilemapWidth) {
-    var room = new Room(offsetX, offsetY, width, height);
-
-    for (var i in rooms) {
-        if (room.intersects(rooms[i])) return null;
-    }
-    var tileIndex = 0;
-    for (var y = 0; y < height; y++) {
-        for (var x = 0; x < width; x++) {
-            tilemap[getIndex(x + offsetX, y + offsetY, tilemapWidth)] = 11;
-        }
-    }
-
-    return room;
-}
-
-function generateHorizontalCorridor(startX, endX, y, tilemap, tilemapWidth) {
-    var sx = Phaser.Math.min(startX, endX);
-    var ex = Phaser.Math.max(startX, endX);
-    for (var x = sx; x <= ex; x++) {
-        tilemap[getIndex(x, y, tilemapWidth)] = 11;
-    }
-}
-
-function generateVerticalCorridor(startY, endY, x, tilemap, tilemapWidth) {
-    var sy = Phaser.Math.min(startY, endY);
-    var ey = Phaser.Math.max(startY, endY);
-    for (var y = sy; y <= ey; y++) {
-        tilemap[getIndex(x, y, tilemapWidth)] = 11;
-    }
-}
 
 function update() {
     if (cursors.left.isDown) {
@@ -167,7 +92,7 @@ function render() {
         game.debug.text("Tile " + tile.index + " [" + tile.x + ", " + tile.y + "]", pointer.x, pointer.y)
     }*/
     
-    game.debug.text("Arrowkeys", 32, 32, 'rgba(0,0,0,1)');
+    game.debug.text("Arrowkeys", 32, game.world.height+32, 'rgba(0,0,0,1)');
 }
 
 
