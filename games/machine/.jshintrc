@@ -1,0 +1,8 @@
+{
+    "globals": {
+        "Machine": true,
+        "Phaser": true,
+        "define": true,
+        "require": true
+    }
+}
