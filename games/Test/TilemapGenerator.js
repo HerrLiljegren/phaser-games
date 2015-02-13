@@ -10,9 +10,13 @@ var TilemapGenerator = function() {
     this.wallTileIndex = 18;
 
     this.options = {
+        width: 120,
+        height: 120,
+        tileWidth: 32,
+        tileHeight: 32,
         emptyTileIndex: -1,
         maxIterations: 100,
-        maxRooms: 10,
+        maxRooms: 1,
         roomSize: {
             min: {
                 width: 10,
@@ -29,17 +33,24 @@ var TilemapGenerator = function() {
 };
 
 TilemapGenerator.prototype = {
-    create: function(width, height, tileWidth, tileHeight) {
-        this.width = 120;
-        this.height = 120;
-        this.tileWidth = tileWidth;
-        this.tileHeight = tileHeight;
+    create: function(width, height, tileWidth, tileHeight, options) {
+        this.extend(this.options, options);
+        
+        this.width = width || this.options.width;
+        this.height = height || this.options.height;
+        this.tileWidth = tileWidth || this.options.tileWidth;
+        this.tileHeight = tileHeight || this.options.tileHeight;
         this.rooms = [];
         this.csv = "";
+        
+        
+        
         this.tilemap = Array.apply(null, new Array(this.width * this.height)).map(Number.prototype.valueOf, this.options.emptyTileIndex);
 
         this._generateBinaryTilemap();
         this._placeWalls();
+        
+        this.setTileIndex(Math.floor(this.rooms[0].centerX), Math.floor(this.rooms[0].centerY), 15);
         
         this._generateCsv();
     },

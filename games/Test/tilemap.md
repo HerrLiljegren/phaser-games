@@ -1,3 +1,6 @@
+
+[how-to-use-bsp-trees-to-generate-game-maps](http://gamedevelopment.tutsplus.com/tutorials/how-to-use-bsp-trees-to-generate-game-maps--gamedev-12268)
+
 Here goes. ^^
 Loopa igenom alla tiles, bitshifta in grannarna, upp, höger, ner, vänster 
 (kanten av världen räknas som ingen granne, sen mappar du resultatet direkt till ett tile-index. Så binärt 0011, vad det nu blir i decimalt, kommer ge ett ner-vänster hörn. sen mappar du alla kombinationer, finns säkert färdiga tables eller ett snabbt kodat program som gör.
