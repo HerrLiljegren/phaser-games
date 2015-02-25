@@ -15,8 +15,18 @@ Machine.LevelManager = (function() {
         preload: function(game) {
             _game = game;
             
-            _tilemapGenerator.create(40*3,40*3,32,32, {
-                maxRooms: 10
+            _tilemapGenerator.create(40*6,40*6,32,32, {
+                maxRooms: 10,
+                roomSize: {
+                    min: {
+                        width: 10,
+                        height: 10
+                    },
+                    max: {
+                        width: 20,
+                        height: 20
+                    }
+                }
             });
     
             _game.load.tilemap('map', null, _tilemapGenerator.csv, Phaser.Tilemap.CSV);
@@ -35,9 +45,9 @@ Machine.LevelManager = (function() {
             
             //  Set the tiles for collision.
             //  Do this BEFORE generating the p2 bodies below.
-            _level.setCollisionBetween(1, 16);
+            _level.setCollisionBetween(15,15);
     
-            _layer.debug = true;
+            //_layer.debug = true;
             
             //  Convert the tilemap layer into bodies. Only tiles that collide (see above) are created.
             //  This call returns an array of body objects which you can perform addition actions on if
@@ -55,13 +65,34 @@ Machine.LevelManager = (function() {
         
         update: function(player) {
             _game.physics.arcade.collide(player, _layer, function(player, tile) {
-                return false;
+                return true;
             }, function(player, tile) {
-                if(tile.index !== 0) {
-                    return true;
+                return true;
+                
+                /*var collides = false;
+                
+                if(tile.index === 1) { // Top-tile
+                
+                    var color;
+                    
+                    if(tile.worldY + 8 > player.body.y) {
+                        color = "rgba(255,0,0,255);";
+                        collides = true;
+                        player.body.velocity.y = 0;
+                        player.body.newVelocity.y = 0;
+                        player.body.blocked.up  = true;
+                    } else {
+                        color = "rgba(0,0,255,255);";
+                        collides = false;
+                    }
+                    _game.debug.geom(new Phaser.Rectangle(tile.worldX, tile.worldY, 32, 8), 'rgba(255, 0, 0, 255);');
+                    _game.debug.geom(new Phaser.Rectangle(player.body.x, player.body.y, 64, 64), color);
+                    
+                } else if(tile.index !== 0) {
+                    collides = true;
                 }
                 
-                return false;
+                return collides;*/
             });
         }
     };

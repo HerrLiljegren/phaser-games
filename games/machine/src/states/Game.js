@@ -31,7 +31,11 @@ Machine.Main.prototype = {
 
     render: function() {
         this.game.debug.spriteInfo(this.player, 32, 32);
+        //this.game.debug.body(this.player);
         this.game.debug.text("FPS: " + this.game.time.fps, 32, 300);
-        this.game.debug.pixel(0, 0, 'rgba(255,0,0,255)', 5);
+        this.game.debug.text("Frames: " + this.game.time.frames, 32, 316);
+        this.game.debug.text("MS Min: " + this.game.time.msMin, 32, 332);
+        this.game.debug.text("MS Max: " + this.game.time.msMax, 32, 348);
+        //this.game.debug.pixel(this.player.worldTransform.tx, this.player.worldTransform.ty, 'rgba(255,0,0,255)', 5);
     }
 };

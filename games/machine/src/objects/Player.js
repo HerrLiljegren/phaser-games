@@ -35,7 +35,7 @@ Machine.Player.prototype.update = function() {
 Machine.Player.prototype._rotateToPointer = function() {
      this.rotation = this.game.physics.arcade.angleToPointer(this);
     
-     return;
+     //return;
     // http://www.html5gamedevs.com/topic/5987-force-sprite-to-rotate-with-p2-physics-body/
     //1. angleToPointer makes no assumption over our current angle- th thinks it's always 0
     //2. so include the current rotation of our sprite in the expression
@@ -60,12 +60,23 @@ Machine.Player.prototype._rotateToPointer = function() {
     //remember we are wotking with the angle velocity and let the engine
     //rotate the body
     var speed = 150;
-    this.body.rotateLeft(speed * deltaMouseRad);
+    //this.body.rotateLeft(speed * deltaMouseRad);
+    //this.rotation = deltaMouseRad;
+    console.log(deltaMouseRad);
 };
 
 Machine.Player.prototype._handleInput = function() {
     if (this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
-        this.game.physics.arcade.velocityFromAngle(this.angle, 300, this.body.velocity);
+        
+        var speed;
+        
+        if(this.game.input.keyboard.isDown(Phaser.Keyboard.SHIFT)) {
+            speed = 150;
+        } else {
+            speed = 75;
+        }
+        
+        this.game.physics.arcade.velocityFromAngle(this.angle, speed, this.body.velocity);
         //game.physics.arcade.velocityFromAngle(sprite.angle, 300, sprite.body.velocity);
         //this.body.thrust(400);
     }

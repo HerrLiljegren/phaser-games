@@ -14,7 +14,7 @@ var TilemapGenerator = function() {
         height: 120,
         tileWidth: 32,
         tileHeight: 32,
-        emptyTileIndex: -1,
+        emptyTileIndex: 15,
         maxIterations: 100,
         maxRooms: 1,
         roomSize: {
@@ -147,12 +147,12 @@ TilemapGenerator.prototype = {
             var surroundingTileIndex = this.getSurroundingTileIndex(x, y);
             var newTileIndex = 0;
             
-            if(currentTileIndex == -1) continue;
+            if(currentTileIndex == this.options.emptyTileIndex) continue;
             
-            var hasNeighbourNorth = surroundingTileIndex.north === -1;
-            var hasNeighbourEast = surroundingTileIndex.east === -1;
-            var hasNeighbourSouth = surroundingTileIndex.south === -1;
-            var hasNeighbourWest = surroundingTileIndex.west === -1;
+            var hasNeighbourNorth = surroundingTileIndex.north === this.options.emptyTileIndex;
+            var hasNeighbourEast = surroundingTileIndex.east === this.options.emptyTileIndex;
+            var hasNeighbourSouth = surroundingTileIndex.south === this.options.emptyTileIndex;
+            var hasNeighbourWest = surroundingTileIndex.west === this.options.emptyTileIndex;
             
             newTileIndex = ((hasNeighbourNorth ? NORTH : 0) | (hasNeighbourEast ? EAST : 0) | (hasNeighbourSouth ? SOUTH : 0) | (hasNeighbourWest ? WEST : 0));
             
