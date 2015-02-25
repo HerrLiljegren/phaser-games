@@ -7,6 +7,7 @@ Machine.Boot.prototype = {
     
     preload: function() {
         console.log('Boot.preload');
+        this.game.time.advancedTiming = true;
     },
     
     create: function() {
@@ -14,6 +15,7 @@ Machine.Boot.prototype = {
         
         this.game.canvas.oncontextmenu = function (e) { e.preventDefault(); }
         
+        this.game.stage.backgroundColor = '#8ADA55';
         this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
         
         //have the game centered horizontally
@@ -24,7 +26,9 @@ Machine.Boot.prototype = {
         this.scale.setScreenSize(true);
         
         //  We're going to be using physics, so enable the Arcade Physics system
-        this.game.physics.startSystem(Phaser.Physics.ARCADE);
+        //this.game.physics.startSystem(Phaser.Physics.ARCADE);
+        
+        this.game.physics.startSystem(Phaser.Physics.P2JS)
         
         this.game.state.start('Preloader');
     }

@@ -6,7 +6,7 @@ Machine.Menu = function(game) {};
 Machine.Menu.prototype = {
     
     preload: function() {
-        this.game.stage.backgroundColor = '#000';
+        
     },
     
     create: function() {
