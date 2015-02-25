@@ -37,5 +37,11 @@ Machine.Main.prototype = {
         this.game.debug.text("MS Min: " + this.game.time.msMin, 32, 332);
         this.game.debug.text("MS Max: " + this.game.time.msMax, 32, 348);
         //this.game.debug.pixel(this.player.worldTransform.tx, this.player.worldTransform.ty, 'rgba(255,0,0,255)', 5);
+        
+        // var p = new Phaser.Point(this.player.worldTransform.tx + 20, this.player.worldTransform.ty - 23);
+        // p.rotate(this.player.worldTransform.tx, this.player.worldTransform.ty, this.player.rotation);
+        
+        //this.game.debug.pixel(p.x, p.y, 'rgba(255,0,0,255)', 3);
+        
     }
 };

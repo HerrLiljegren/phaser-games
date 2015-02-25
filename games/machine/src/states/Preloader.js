@@ -19,6 +19,7 @@ Machine.Preloader.prototype = {
         ]);
         
         this.game.load.image('full-body', 'assets/player/Full_body.png');
+        this.game.load.image('bullet', 'assets/bullet.png');
         
         Machine.LevelManager.preload(this.game);
     },

@@ -12,9 +12,22 @@ Machine.Player = function(game, startX, startY) {
     
     this.anchor.setTo(0.5);
 
-    this.angleToPointer = 0;
-    this.rotationSpeed = Phaser.Math.degToRad(1);
-    this.rotationDeadZone = Phaser.Math.degToRad(10);
+    this.maxSpeed = 250;
+    
+    
+    
+    //  Our bullet group
+    this.bullets = game.add.group();
+    this.bullets.enableBody = true;
+    this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
+    this.bullets.createMultiple(30, 'bullet', 0, false);
+    this.bullets.setAll('anchor.x', 0.5);
+    this.bullets.setAll('anchor.y', 0.5);
+    this.bullets.setAll('outOfBoundsKill', true);
+    this.bullets.setAll('checkWorldBounds', true);
+    
+    this.fireRate = 100;
+    this.nextFire = 0;
 };
 
 Machine.Player.prototype = Object.create(Phaser.Sprite.prototype);
@@ -62,7 +75,6 @@ Machine.Player.prototype._rotateToPointer = function() {
     var speed = 150;
     //this.body.rotateLeft(speed * deltaMouseRad);
     //this.rotation = deltaMouseRad;
-    console.log(deltaMouseRad);
 };
 
 Machine.Player.prototype._handleInput = function() {
@@ -71,13 +83,42 @@ Machine.Player.prototype._handleInput = function() {
         var speed;
         
         if(this.game.input.keyboard.isDown(Phaser.Keyboard.SHIFT)) {
-            speed = 150;
+            speed = this.maxSpeed * 2;
         } else {
-            speed = 75;
+            speed = this.maxSpeed;
         }
         
         this.game.physics.arcade.velocityFromAngle(this.angle, speed, this.body.velocity);
         //game.physics.arcade.velocityFromAngle(sprite.angle, 300, sprite.body.velocity);
         //this.body.thrust(400);
+    }
+    
+    if(this.game.input.activePointer.isDown) {
+        this.shoot();
+    }
+};
+
+Machine.Player.prototype.shoot = function() {
+    if (this.game.time.now > this.nextFire && this.bullets.countDead() > 0)
+    {
+        this.nextFire = this.game.time.now + this.fireRate;
+
+        var bullet = this.bullets.getFirstExists(false);
+
+        var pl = new Phaser.Point(this.x + 20, this.y - 23);
+        var pr =  new Phaser.Point(this.x + 20, this.y + 23);
+        var p;
+        if(Phaser.Math.chanceRoll(50)) {
+            p = pl;
+        } else {
+            p = pr;
+        }
+        
+        p.rotate(this.x, this.y, this.rotation);
+        bullet.reset(p.x, p.y);
+
+        //bullet.rotation = this.game.physics.arcade.moveToPointer(bullet, 1000, this.game.input.activePointer);
+        this.game.physics.arcade.velocityFromAngle(this.angle, 1000, bullet.body.velocity);
+        bullet.angle = this.angle;
     }
 };

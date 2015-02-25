@@ -16,15 +16,15 @@ Machine.LevelManager = (function() {
             _game = game;
             
             _tilemapGenerator.create(40*6,40*6,32,32, {
-                maxRooms: 10,
+                maxRooms: 30,
                 roomSize: {
                     min: {
-                        width: 10,
-                        height: 10
+                        width: 20,
+                        height: 23
                     },
                     max: {
-                        width: 20,
-                        height: 20
+                        width: 30,
+                        height: 33
                     }
                 }
             });
