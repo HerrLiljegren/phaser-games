@@ -50,8 +50,6 @@ TilemapGenerator.prototype = {
         this._generateBinaryTilemap();
         this._placeWalls();
         
-        this.setTileIndex(Math.floor(this.rooms[0].centerX), Math.floor(this.rooms[0].centerY), 15);
-        
         this._generateCsv();
     },
 
@@ -97,7 +95,7 @@ TilemapGenerator.prototype = {
     },
 
     _generateRoom: function(offsetX, offsetY, width, height) {
-        var room = new Room(offsetX-1, offsetY-1, width+2, height+2);
+        var room = new Machine.Room(offsetX-1, offsetY-1, width+2, height+2);
 
         for (var i in this.rooms) {
             if (room.intersects(this.rooms[i])) return null;
@@ -107,10 +105,6 @@ TilemapGenerator.prototype = {
             for (var x = 0; x < room.width; x++) {
                 this.setTileIndex(x + room.x, y + room.y, this.floorTileIndex);
             }
-        }
-        
-        if(this.rooms.length == 0) {
-            this.setTileIndex(Math.floor(room.centerX), Math.floor(room.centerY), 16);
         }
 
         return room;
@@ -122,6 +116,8 @@ TilemapGenerator.prototype = {
         for (var x = sx; x <= ex; x++) {
             this.setTileIndex(x, y+1, this.floorTileIndex);
             this.setTileIndex(x, y-1, this.floorTileIndex);
+            this.setTileIndex(x, y+2, this.floorTileIndex);
+            this.setTileIndex(x, y-2, this.floorTileIndex);
             this.setTileIndex(x, y, this.floorTileIndex);
         }
     },
@@ -132,6 +128,8 @@ TilemapGenerator.prototype = {
         for (var y = sy; y <= ey; y++) {
             this.setTileIndex(x+1, y, this.floorTileIndex);
             this.setTileIndex(x-1, y, this.floorTileIndex);
+            this.setTileIndex(x+2, y, this.floorTileIndex);
+            this.setTileIndex(x-2, y, this.floorTileIndex);
             this.setTileIndex(x, y, this.floorTileIndex);
         }
     },
