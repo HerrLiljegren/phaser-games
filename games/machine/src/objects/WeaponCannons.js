@@ -2,14 +2,17 @@
 'use strict';
 
 Machine.WeaponCannons = function(game, parent, ox, oy, key, options) {
-    Phaser.Sprite.call(this, game, ox, oy, key);
-    this.animations.add('fire', null, 15, false);
+    //Phaser.Sprite.call(this, game, ox, oy, key);
     
-    this.options = {
-        muzzle: new Phaser.Point()
+    this.leftCannon = {
+        sprite: new Phaser.Sprite(game, -32, -32, 'canon-left'),
+        muzzle: new Phaser.Point(64, 10)
     };
     
-    Tools.extend(this.options, options);
+    this.rightCannon = {
+        sprite: new Phaser.Sprite(game, -32, 0, 'canon-right'),
+        muzzle: new Phaser.Point(64, 21)
+    };
     
     //  Our bullet group
     this.bullets = game.add.group();
@@ -27,8 +30,8 @@ Machine.WeaponCannons = function(game, parent, ox, oy, key, options) {
     parent.addChild(this);
 };
 
-Machine.WeaponCannons.prototype = Object.create(Phaser.Sprite.prototype);
-Machine.WeaponCannons.prototype.constructor = Machine.WeaponCannons;
+//Machine.WeaponCannons.prototype = Object.create(Phaser.Sprite.prototype);
+//Machine.WeaponCannons.prototype.constructor = Machine.WeaponCannons;
 
 Machine.WeaponCannons.prototype.update = function() {
     this.rotation = Phaser.Math.clamp(this.game.physics.arcade.angleToPointer(this) - this.rotation, Phaser.Math.degToRad(-5), Phaser.Math.degToRad(5));
