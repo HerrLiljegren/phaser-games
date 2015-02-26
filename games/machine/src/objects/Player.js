@@ -3,7 +3,17 @@
 
 Machine.Player = function(game, startX, startY) {
 
-    Phaser.Sprite.call(this, game, startX, startY, 'full-body');
+    Phaser.Sprite.call(this, game, startX, startY, 'body');
+    
+    this.leftCanon = this.game.add.sprite(-32, -32, 'canon-left');
+    this.leftCanon.animations.add('fire');
+    this.rightCanon = this.game.add.sprite(-32, 0, 'canon-right');
+    this.rightCanon.animations.add('fire');
+    this.addChild(this.leftCanon);
+    this.addChild(this.rightCanon);
+    
+    this.fireLeft = true;
+    
     //this.game.physics.p2.enable(this, true);
     this.game.physics.arcade.enable(this);
     
@@ -26,7 +36,7 @@ Machine.Player = function(game, startX, startY) {
     this.bullets.setAll('outOfBoundsKill', true);
     this.bullets.setAll('checkWorldBounds', true);
     
-    this.fireRate = 100;
+    this.fireRate = 50;
     this.nextFire = 0;
 };
 
@@ -95,6 +105,8 @@ Machine.Player.prototype._handleInput = function() {
     
     if(this.game.input.activePointer.isDown) {
         this.shoot();
+    } else {
+        
     }
 };
 
@@ -108,11 +120,21 @@ Machine.Player.prototype.shoot = function() {
         var pl = new Phaser.Point(this.x + 20, this.y - 23);
         var pr =  new Phaser.Point(this.x + 20, this.y + 23);
         var p;
-        if(Phaser.Math.chanceRoll(50)) {
+        
+        var bindex = this.bullets.getIndex(bullet);
+        
+        
+        if(this.fireLeft) {
             p = pl;
+            this.leftCanon.animations.stop(true, true);
+            this.leftCanon.animations.play('fire', 10, false);
         } else {
             p = pr;
+            this.rightCanon.animations.stop(true, true);
+            this.rightCanon.animations.play('fire', 10, false);
         }
+        
+        this.fireLeft = !this.fireLeft;
         
         p.rotate(this.x, this.y, this.rotation);
         bullet.reset(p.x, p.y);
