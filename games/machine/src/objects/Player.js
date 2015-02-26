@@ -5,12 +5,14 @@ Machine.Player = function(game, startX, startY) {
 
     Phaser.Sprite.call(this, game, startX, startY, 'body');
     
-    this.leftCanon = this.game.add.sprite(-32, -32, 'canon-left');
-    this.leftCanon.animations.add('fire');
-    this.rightCanon = this.game.add.sprite(-32, 0, 'canon-right');
-    this.rightCanon.animations.add('fire');
-    this.addChild(this.leftCanon);
-    this.addChild(this.rightCanon);
+    this.leftCanon = new Machine.WeaponCannons(this.game, this, -32, -32, 'canon-left', {
+        muzzle: new Phaser.Point(64, 10)
+    });
+    
+    this.rightCanon = new Machine.WeaponCannons(this.game, this, -32, 0, 'canon-right', {
+        muzzle: new Phaser.Point(64, 21)
+    });
+    
     
     this.fireLeft = true;
     
@@ -23,21 +25,6 @@ Machine.Player = function(game, startX, startY) {
     this.anchor.setTo(0.5);
 
     this.maxSpeed = 250;
-    
-    
-    
-    //  Our bullet group
-    this.bullets = game.add.group();
-    this.bullets.enableBody = true;
-    this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
-    this.bullets.createMultiple(30, 'bullet', 0, false);
-    this.bullets.setAll('anchor.x', 0.5);
-    this.bullets.setAll('anchor.y', 0.5);
-    this.bullets.setAll('outOfBoundsKill', true);
-    this.bullets.setAll('checkWorldBounds', true);
-    
-    this.fireRate = 50;
-    this.nextFire = 0;
 };
 
 Machine.Player.prototype = Object.create(Phaser.Sprite.prototype);
@@ -48,7 +35,8 @@ Machine.Player.prototype.update = function() {
     this.body.velocity.y = 0;
     this.body.angularVelocity = 0;
 
-    
+    //this.rightCanon.update();
+    //this.leftCanon.update();
 
     this._rotateToPointer();
 
@@ -56,9 +44,6 @@ Machine.Player.prototype.update = function() {
 };
 
 Machine.Player.prototype._rotateToPointer = function() {
-    
-    this.rightCanon.rotation = Phaser.Math.clamp(this.game.physics.arcade.angleToPointer(this) - this.rotation, Phaser.Math.degToRad(-5), Phaser.Math.degToRad(5));
-    this.leftCanon.rotation = Phaser.Math.clamp(this.game.physics.arcade.angleToPointer(this) - this.rotation, Phaser.Math.degToRad(-5), Phaser.Math.degToRad(5));
      
      //this.rightCanon.rotation = (this.game.physics.arcade.angleToPointer(this) - this.rotation) % Phaser.Math.degToRad(5);
      //this.leftCanon.rotation = (this.game.physics.arcade.angleToPointer(this) - this.rotation) % Phaser.Math.degToRad(5);
@@ -119,54 +104,8 @@ Machine.Player.prototype._handleInput = function() {
     }
     
     if(this.game.input.activePointer.isDown) {
-        this.fire();
-    } else {
-        
+        this.leftCanon.fire();
+        this.rightCanon.fire();
     }
 };
 
-Machine.Player.prototype.fire = function() {
-    if (this.game.time.now > this.nextFire && this.bullets.countDead() > 0)
-    {
-        this.nextFire = this.game.time.now + this.fireRate;
-
-        var bullet = this.bullets.getFirstExists(false);
-
-        var pl = new Phaser.Point(this.leftCanon.world.x + 64, this.leftCanon.world.y+10);
-        var pr =  new Phaser.Point(this.rightCanon.world.x + 64, this.rightCanon.world.y+21);
-        var p;
-        
-        var bindex = this.bullets.getIndex(bullet);
-        
-        
-        if(this.fireLeft) {
-            p = pl;
-            this.leftCanon.animations.stop(true, true);
-            this.leftCanon.animations.play('fire', 10, false);
-            
-            p.rotate(this.leftCanon.world.x, this.leftCanon.world.y, this.rotation + this.leftCanon.rotation);
-            bullet.reset(p.x, p.y);
-            
-            this.game.physics.arcade.velocityFromAngle(this.angle + this.leftCanon.angle, 1000, bullet.body.velocity);
-            bullet.angle = this.angle + this.leftCanon.angle;
-            
-        } else {
-            p = pr;
-            this.rightCanon.animations.stop(true, true);
-            this.rightCanon.animations.play('fire', 10, false);
-            
-            p.rotate(this.rightCanon.world.x, this.rightCanon.world.y, this.rotation + this.rightCanon.rotation);
-            bullet.reset(p.x, p.y);
-            
-            this.game.physics.arcade.velocityFromAngle(this.angle + this.rightCanon.angle, 1000, bullet.body.velocity);
-            bullet.angle = this.angle + this.rightCanon.angle;
-        }
-        
-        this.fireLeft = !this.fireLeft;
-        
-        
-
-        //bullet.rotation = this.game.physics.arcade.moveToPointer(bullet, 1000, this.game.input.activePointer);
-        
-    }
-};
