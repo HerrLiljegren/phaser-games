@@ -1,4 +1,7 @@
+# Globally Useful gitignores
+# https://github.com/github/gitignore/tree/master/Global
 .c9/
+.idea/
 node_modules/
 npm-debug.log
 *.suo
