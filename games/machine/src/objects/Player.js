@@ -104,13 +104,13 @@ Machine.Player.prototype._handleInput = function() {
     }
     
     if(this.game.input.activePointer.isDown) {
-        this.shoot();
+        this.fire();
     } else {
         
     }
 };
 
-Machine.Player.prototype.shoot = function() {
+Machine.Player.prototype.fire = function() {
     if (this.game.time.now > this.nextFire && this.bullets.countDead() > 0)
     {
         this.nextFire = this.game.time.now + this.fireRate;
