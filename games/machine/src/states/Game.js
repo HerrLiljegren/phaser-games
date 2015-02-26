@@ -38,10 +38,13 @@ Machine.Main.prototype = {
         this.game.debug.text("MS Max: " + this.game.time.msMax, 32, 348);
         //this.game.debug.pixel(this.player.worldTransform.tx, this.player.worldTransform.ty, 'rgba(255,0,0,255)', 5);
         
-        // var p = new Phaser.Point(this.player.worldTransform.tx + 20, this.player.worldTransform.ty - 23);
+        //var p = new Phaser.Point(this.player.leftCanon.worldTransform.tx + 64, this.player.leftCanon.worldTransform.ty + 10);
+        //var pb = new Phaser.Point(this.player.leftCanon.body.x, this.player.leftCanon.body.y);
         // p.rotate(this.player.worldTransform.tx, this.player.worldTransform.ty, this.player.rotation);
         
         //this.game.debug.pixel(p.x, p.y, 'rgba(255,0,0,255)', 3);
+        //this.game.debug.pixel(p.x, p.y, 'rgba(255,0,0,255)', 3);
+        //this.game.debug.pixel(pb.x, pb.y, 'rgba(255,255,0,255)', 3);
         
     }
 };
