@@ -42,10 +42,10 @@ Machine.WeaponCannons.prototype.fire = function() {
 
         var bullet = this.bullets.getFirstExists(false);
 
-        this.animations.stop(true, true);
+        this.animations.stop('fire');
         this.animations.play('fire', 10, false);
         var mworld = new Phaser.Point(this.world.x + this.options.muzzle.x, this.world.y + this.options.muzzle.y);
-        mworld.rotate(this.world.x, this.world.y, this.parent.rotation + this.rotation);
+        mworld.rotate(this.world.x, this.world.y, this.parent.rotation + this.rotation, false);
         bullet.reset(mworld.x, mworld.y);
         
         this.game.physics.arcade.velocityFromAngle(this.parent.angle + this.angle, 1000, bullet.body.velocity);
