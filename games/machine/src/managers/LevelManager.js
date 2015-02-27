@@ -45,7 +45,7 @@ Machine.LevelManager = (function() {
             
             //  Set the tiles for collision.
             //  Do this BEFORE generating the p2 bodies below.
-            _level.setCollisionBetween(15,15);
+            //_level.setCollisionBetween(15,15);
     
             //_layer.debug = true;
             

@@ -3,15 +3,24 @@
 
 Machine.Player = function(game, startX, startY) {
 
-    Phaser.Sprite.call(this, game, startX, startY, 'body');
+    Phaser.Sprite.call(this, game, startX, startY, 'legs');
+    this.anchor.setTo(0.5);
     
-    this.leftCanon = new Machine.WeaponCannons(this.game, this, -32, -32, 'canon-left', {
-        muzzle: new Phaser.Point(64, 10)
-    });
+    this.head = new Phaser.Sprite(game, 0, 0, 'body');
+    this.head.anchor.setTo(0.5);
+    this.addChild(this.head);
     
-    this.rightCanon = new Machine.WeaponCannons(this.game, this, -32, 0, 'canon-right', {
-        muzzle: new Phaser.Point(64, 21)
-    });
+    this.arrow = new Phaser.Sprite(game, 48, 0, 'arrow');
+    this.arrow.anchor.setTo(0.5);
+    this.arrow.rotation = Math.PI/4;
+    this.arrow.alpha = 0.8;
+    this.arrow.scale.setTo(0.5, 0.5);
+    this.addChild(this.arrow);
+    
+    this.weaponCannons = new Machine.WeaponCannons(game, this.head, {});
+    
+    
+    
     
     
     this.fireLeft = true;
@@ -22,7 +31,7 @@ Machine.Player = function(game, startX, startY) {
     this.game.camera.follow(this);
     this.body.collideWorldBounds = true;
     
-    this.anchor.setTo(0.5);
+    
 
     this.maxSpeed = 250;
 };
@@ -31,6 +40,9 @@ Machine.Player.prototype = Object.create(Phaser.Sprite.prototype);
 Machine.Player.prototype.constructor = Machine.Player;
 
 Machine.Player.prototype.update = function() {
+    Phaser.Group.prototype.update.call(this); // Call childrens update
+    Phaser.Group.prototype.update.call(this.head); // Call childrens update
+    
     this.body.velocity.x = 0;
     this.body.velocity.y = 0;
     this.body.angularVelocity = 0;
@@ -44,6 +56,7 @@ Machine.Player.prototype.update = function() {
 };
 
 Machine.Player.prototype._rotateToPointer = function() {
+     this.head.rotation = this.game.physics.arcade.angleToPointer(this) - this.rotation;
      
      //this.rightCanon.rotation = (this.game.physics.arcade.angleToPointer(this) - this.rotation) % Phaser.Math.degToRad(5);
      //this.leftCanon.rotation = (this.game.physics.arcade.angleToPointer(this) - this.rotation) % Phaser.Math.degToRad(5);
@@ -104,8 +117,9 @@ Machine.Player.prototype._handleInput = function() {
     }
     
     if(this.game.input.activePointer.isDown) {
-        this.leftCanon.fire();
-        this.rightCanon.fire();
+        this.weaponCannons.isShooting = true;
+    } else {
+        this.weaponCannons.isShooting = false;
     }
 };
 
