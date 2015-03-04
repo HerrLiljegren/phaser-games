@@ -96,18 +96,22 @@ Machine.Player.prototype._rotateToPointer = function() {
 };
 
 Machine.Player.prototype._handleInput = function() {
+    var speed = 0;
     if (this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
-        var speed;
         
         if(this.game.input.keyboard.isDown(Phaser.Keyboard.SHIFT)) {
             speed = this.maxSpeed * 2;
         } else {
             speed = this.maxSpeed;
         }
-        
+    }
+    
+    if(this.game.input.keyboard.isDown(Phaser.Keyboard.S)) {
+        speed = -this.maxSpeed;
+    }
+    
+    if(speed !== 0) {
         this.game.physics.arcade.velocityFromAngle(this.angle, speed, this.body.velocity);
-        //game.physics.arcade.velocityFromAngle(sprite.angle, 300, sprite.body.velocity);
-        //this.body.thrust(400);
     }
     
     if(this.game.input.keyboard.isDown(Phaser.Keyboard.A)) {

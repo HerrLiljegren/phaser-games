@@ -19,6 +19,12 @@ Machine.DebugManager = (function() {
                 game.debug.pixel(point.x, point.y, 'rgba(0, 255, 0, 255);', 4);
             }
             
+        },
+        
+        addCircle: function(game, key, x, y, radius) {
+            pixels[key] = function() {
+                game.debug.geom(new Phaser.Circle(x, y, radius*2), 'rgba(0, 255, 0, 255);', false);
+            }
         }
     }
 })();

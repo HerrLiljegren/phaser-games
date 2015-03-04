@@ -6,3 +6,5 @@
 * [Generate BSP maps](http://gamedevelopment.tutsplus.com/tutorials/how-to-use-bsp-trees-to-generate-game-maps--gamedev-12268)
 * [PixelArtMaker](http://www.piskelapp.com/)
 * [Pointer Lock API](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_Lock_API)
+* [QuadTree](http://gamedevelopment.tutsplus.com/tutorials/quick-tip-use-quadtrees-to-detect-likely-collisions-in-2d-space--gamedev-374)
+* [Game Mechanic Explorer](http://gamemechanicexplorer.com/)

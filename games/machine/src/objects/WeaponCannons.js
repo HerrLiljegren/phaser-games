@@ -43,12 +43,17 @@ Machine.WeaponCannons = function(game, parent, options) {
     this.fireRate = 50;
     this.nextFire = 0;
     this.isShooting = false;
+    this.fireLeft = true;
     
     parent.addChild(this);
+    
+    this.createParticles();
 };
 
 Machine.WeaponCannons.prototype = Object.create(Phaser.Group.prototype);
 Machine.WeaponCannons.prototype.constructor = Machine.WeaponCannons;
+
+
 
 Machine.WeaponCannons.prototype.update = function() {
     //this.leftCannon.sprite.rotation = Phaser.Math.clamp(this.game.physics.arcade.angleToPointer(this) - this.rotation, Phaser.Math.degToRad(-5), Phaser.Math.degToRad(5));
@@ -76,8 +81,13 @@ Machine.WeaponCannons.prototype.fire = function() {
     {
         this.nextFire = this.game.time.now + (1000/this.currentRateOfFire);
 
-        this.fireCannon(this.leftCannon);
-        this.fireCannon(this.rightCannon);
+        if(this.fireLeft) {
+            this.fireCannon(this.leftCannon);
+        } else {
+            this.fireCannon(this.rightCannon);
+        }
+        
+        this.fireLeft = !this.fireLeft;
         
         return true;
     }
@@ -109,4 +119,80 @@ Machine.WeaponCannons.prototype.fireCannon = function(cannon) {
         
         // Start the fire animation
         cannon.sprite.animations.play('fire', 10, true);
-}
+};
+
+Machine.WeaponCannons.prototype.createParticles = function() {
+    this.smokeEmitter = this.game.add.emitter(0, 0, 100);
+    this.smokeEmitter.makeParticles('smoke');
+    this.smokeEmitter.setAlpha(0.5, 0, 2000);
+    this.smokeEmitter.setScale(0.5, 1, 0.5, 1, 2000);
+    this.smokeEmitter.gravity = 0;
+    this.smokeEmitter.minParticleSpeed.setTo(0, -40);
+    this.smokeEmitter.maxParticleSpeed.setTo(-40, 40);
+    
+    this.debriEmitter = this.game.add.emitter(0, 0, 100);
+    this.debriEmitter.makeParticles('debri');
+    this.debriEmitter.setAlpha(1, 1, 2000);
+    this.debriEmitter.setScale(1, 2, 1, 2, 2000);
+    this.debriEmitter.gravity = 0;
+    var speed = 360;
+    this.debriEmitter.minParticleSpeed.setTo(0, -speed);
+    this.debriEmitter.maxParticleSpeed.setTo(-speed, speed);
+    
+    this.bloodEmitter = this.game.add.emitter(0, 0, 100);
+    this.bloodEmitter.makeParticles('blood', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]);
+    this.bloodEmitter.setAlpha(1, 0, 2000);
+    this.bloodEmitter.setScale(0.1, 0.5, 0.1, 0.5, 2000);
+    this.bloodEmitter.gravity = 0;
+    speed = 360;
+    this.bloodEmitter.minParticleSpeed.setTo(-speed, -speed);
+    this.bloodEmitter.maxParticleSpeed.setTo(speed, speed);
+};
+
+Machine.WeaponCannons.prototype.wallImpact = function(origin, phaserDirection) {
+    this.smokeEmitter.x = origin.x;
+    this.smokeEmitter.y = origin.y;
+    
+    this.debriEmitter.x = origin.x;
+    this.debriEmitter.y = origin.y;
+    
+    var smokeSpeed = 40;
+    var debriSpeed = 360;
+    
+    switch(phaserDirection) {
+        case Phaser.UP:
+            this.smokeEmitter.minParticleSpeed.setTo(-smokeSpeed, 0);
+            this.smokeEmitter.maxParticleSpeed.setTo(smokeSpeed, -smokeSpeed);
+            this.debriEmitter.minParticleSpeed.setTo(-debriSpeed, 0);
+            this.debriEmitter.maxParticleSpeed.setTo(debriSpeed, -debriSpeed);
+            break;
+        case Phaser.DOWN:
+            this.smokeEmitter.minParticleSpeed.setTo(-smokeSpeed, 0);
+            this.smokeEmitter.maxParticleSpeed.setTo(smokeSpeed, smokeSpeed);
+            this.debriEmitter.minParticleSpeed.setTo(-debriSpeed, 0);
+            this.debriEmitter.maxParticleSpeed.setTo(debriSpeed, debriSpeed);
+            break;
+        case Phaser.LEFT:
+            this.smokeEmitter.minParticleSpeed.setTo(0, -smokeSpeed);
+            this.smokeEmitter.maxParticleSpeed.setTo(-smokeSpeed, smokeSpeed);
+            this.debriEmitter.minParticleSpeed.setTo(0, -debriSpeed);
+            this.debriEmitter.maxParticleSpeed.setTo(-debriSpeed, debriSpeed);
+            break;
+        case Phaser.RIGHT:
+            this.smokeEmitter.minParticleSpeed.setTo(0, -smokeSpeed);
+            this.smokeEmitter.maxParticleSpeed.setTo(smokeSpeed, smokeSpeed);
+            this.debriEmitter.minParticleSpeed.setTo(0, -debriSpeed);
+            this.debriEmitter.maxParticleSpeed.setTo(debriSpeed, debriSpeed);
+            break;
+    }
+    
+    this.smokeEmitter.start(true, 1000, null, 30);
+    this.debriEmitter.start(true, 150, null, 7);
+};
+
+Machine.WeaponCannons.prototype.enemyImpact = function(x, y) {
+    this.bloodEmitter.x = x;
+    this.bloodEmitter.y = y;
+    
+    this.bloodEmitter.start(true, 150, null, 5);
+};

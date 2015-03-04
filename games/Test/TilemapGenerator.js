@@ -41,16 +41,19 @@ TilemapGenerator.prototype = {
         this.tileWidth = tileWidth || this.options.tileWidth;
         this.tileHeight = tileHeight || this.options.tileHeight;
         this.rooms = [];
-        this.csv = "";
+
         
         
         
         this.tilemap = Array.apply(null, new Array(this.width * this.height)).map(Number.prototype.valueOf, this.options.emptyTileIndex);
+        this.fogOfWarTilemap = Array.apply(null, new Array(this.width * this.height)).map(Number.prototype.valueOf, 0);
+        
 
         this._generateBinaryTilemap();
         this._placeWalls();
         
-        this._generateCsv();
+        this.csv = this._generateCsv(this.tilemap);
+        this.fogOfWarCsv = this._generateCsv(this.fogOfWarTilemap);
     },
 
     _randomIntFromInterval: function(min, max) {
@@ -85,13 +88,13 @@ TilemapGenerator.prototype = {
         }
     },
 
-    _generateCsv: function() {
+    _generateCsv: function(tilemap) {
         var csv = "";
         for (var i = 0; i < this.height; i++) {
-            var slice = this.tilemap.slice(i * this.height, this.width * (i + 1));
+            var slice = tilemap.slice(i * this.height, this.width * (i + 1));
             csv += slice.join() + '\n';
         }
-        this.csv = csv;
+        return csv;
     },
 
     _generateRoom: function(offsetX, offsetY, width, height) {

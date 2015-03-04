@@ -7,46 +7,72 @@ Machine.LevelManager = (function() {
     var _game = null;
     var _level = null;
     var _layer = null;
+    var _layerFogOfWar = null;
     var _tileBodies = [];
     
-    return {
+    
+    var levelManager = {
         spawn: _spawn,
         
         preload: function(game) {
             _game = game;
             
-            _tilemapGenerator.create(40*6,40*6,32,32, {
+            _tilemapGenerator.create(10*6,10*6,32,32, {
                 maxRooms: 30,
                 roomSize: {
                     min: {
-                        width: 20,
-                        height: 23
+                        width: 5,
+                        height: 5
                     },
                     max: {
-                        width: 30,
-                        height: 33
+                        width: 10,
+                        height: 10
                     }
                 }
             });
+            // _tilemapGenerator.create(40*6,40*6,32,32, {
+            //     maxRooms: 30,
+            //     roomSize: {
+            //         min: {
+            //             width: 20,
+            //             height: 23
+            //         },
+            //         max: {
+            //             width: 30,
+            //             height: 33
+            //         }
+            //     }
+            // });
     
             _game.load.tilemap('map', null, _tilemapGenerator.csv, Phaser.Tilemap.CSV);
+            
             _game.load.image('tilesheet', '../Test/tilemapStructure2.png');
+            _game.load.image('fogofwar', 'assets/fogofwar.png');
             
             _spawn.setTo(_tilemapGenerator.rooms[0].centerX * 32, _tilemapGenerator.rooms[0].centerY * 32);
+            this.rooms = _tilemapGenerator.rooms;
         },
         
         create: function() {
+            debugger;
             _level = _game.add.tilemap('map', 32, 32);
             _level.addTilesetImage('tilesheet');
             _layer = _level.createLayer(0);
             _layer.resizeWorld();
             
+            //_layerFogOfWar = _level.createLayer(1);
+            //_level.createFromTiles(_tilemapGenerator.fogOfWarCsv, null, 'fogofwar', 1);
+            //_layerFogOfWar.resizeWorld();
+            
             //_level.setCollisionByExclusion([0], true, _layer, true);
             
             //  Set the tiles for collision.
             //  Do this BEFORE generating the p2 bodies below.
-            //_level.setCollisionBetween(15,15);
+            _level.setCollisionBetween(15,15);
     
+            this.layer = _layer;
+            this.level = _level;
+            
             //_layer.debug = true;
             
             //  Convert the tilemap layer into bodies. Only tiles that collide (see above) are created.
@@ -96,4 +122,6 @@ Machine.LevelManager = (function() {
             });
         }
     };
+    
+    return levelManager;
 })();

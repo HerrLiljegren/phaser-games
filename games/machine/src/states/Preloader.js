@@ -30,8 +30,13 @@ Machine.Preloader.prototype = {
         
         
         
-        this.game.load.image('bullet', 'assets/bullet.png');
         this.game.load.image('arrow', 'assets/arrow.png');
+        this.game.load.image('bullet', 'assets/bullet.png');
+        this.game.load.spritesheet('soldier', 'assets/soldier.png', 16, 16);
+        this.game.load.image('target', 'assets/target.png');
+        this.game.load.image('smoke', 'assets/smoke.png');
+        this.game.load.image('debri', 'assets/debri.png');
+        this.game.load.spritesheet('blood', 'assets/blood.png', 32, 32, 16);
         
         Machine.LevelManager.preload(this.game);
     },
