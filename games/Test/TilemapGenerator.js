@@ -46,7 +46,7 @@ TilemapGenerator.prototype = {
         
         
         this.tilemap = Array.apply(null, new Array(this.width * this.height)).map(Number.prototype.valueOf, this.options.emptyTileIndex);
-        this.fogOfWarTilemap = Array.apply(null, new Array(this.width * this.height)).map(Number.prototype.valueOf, 0);
+        this.fogOfWarTilemap = Array.apply(null, new Array(this.width * this.height)).map(Number.prototype.valueOf, 1);
         
 
         this._generateBinaryTilemap();

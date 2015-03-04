@@ -45,6 +45,7 @@ Machine.LevelManager = (function() {
             // });
     
             _game.load.tilemap('map', null, _tilemapGenerator.csv, Phaser.Tilemap.CSV);
+            _game.load.tilemap('fowMap', null, _tilemapGenerator.fogOfWarCsv, Phaser.Tilemap.CSV);
             
             _game.load.image('tilesheet', '../Test/tilemapStructure2.png');
             _game.load.image('fogofwar', 'assets/fogofwar.png');
@@ -54,21 +55,18 @@ Machine.LevelManager = (function() {
         },
         
         create: function() {
-            debugger;
             _level = _game.add.tilemap('map', 32, 32);
             _level.addTilesetImage('tilesheet');
+            
+            
             _layer = _level.createLayer(0);
             _layer.resizeWorld();
-            
-            //_layerFogOfWar = _level.createLayer(1);
-            //_level.createFromTiles(_tilemapGenerator.fogOfWarCsv, null, 'fogofwar', 1);
-            //_layerFogOfWar.resizeWorld();
             
             //_level.setCollisionByExclusion([0], true, _layer, true);
             
             //  Set the tiles for collision.
             //  Do this BEFORE generating the p2 bodies below.
-            _level.setCollisionBetween(15,15);
+            _level.setCollisionBetween(15,15, true, 0);
     
             this.layer = _layer;
             this.level = _level;
@@ -87,6 +85,15 @@ Machine.LevelManager = (function() {
             //  The final parameter (false) controls if the boundary should use its own collision group or not. In this case we don't require
             //  that, so it's set to false. But if you had custom collision groups set-up then you would need this set to true.
             //_game.physics.p2.setBoundsToWorld(true, true, true, true, false);
+        },
+        
+        createFogOfWar: function() {
+            var fowMap = _game.add.tilemap('fowMap', 32, 32);
+            fowMap.addTilesetImage('fogofwar');
+            _layerFogOfWar = fowMap.createLayer(0);
+            _layerFogOfWar.resizeWorld();
+            
+            this.fogOfWarLayer = _layerFogOfWar;
         },
         
         update: function(player) {
