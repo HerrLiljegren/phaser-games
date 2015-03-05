@@ -31,8 +31,7 @@ Machine.Main.prototype = {
 
         this.game.add.existing(this.player);
 
-        this.crosshair = this.game.add.sprite(0, 0, 'target');
-        this.crosshair.anchor.setTo(0.5);
+        
 
 
         this.fogOfWarTexture = this.game.add.bitmapData(Machine.LevelManager.level.widthInPixels, Machine.LevelManager.level.heightInPixels);
@@ -46,6 +45,9 @@ Machine.Main.prototype = {
         this.fogOfWarVisitedTexture.context.fillRect(0, 0, Machine.LevelManager.level.widthInPixels, Machine.LevelManager.level.heightInPixels);
         this.fogOfWarVisitedSprite = this.game.add.image(0, 0, this.fogOfWarVisitedTexture);
         this.fogOfWarVisitedSprite.blendMode = Phaser.blendModes.MULTIPLY;
+        
+        this.crosshair = this.game.add.sprite(0, 0, 'target');
+        this.crosshair.anchor.setTo(0.5);
 
         // Create the shadow texture
         this.shadowTexture = this.game.add.bitmapData(this.game.width, this.game.height);
@@ -211,7 +213,7 @@ Machine.Main.prototype = {
         
          // Draw circle of light with a soft edge
         var gradient = this.fogOfWarTexture.context.createRadialGradient(
-            this.player.x, this.player.y, this.LIGHT_RADIUS * 0.1,
+            this.player.x, this.player.y, this.LIGHT_RADIUS * 0.75,
             this.player.x, this.player.y, this.LIGHT_RADIUS);
         gradient.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
         gradient.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
@@ -224,8 +226,8 @@ Machine.Main.prototype = {
         
         
         var gradient2 = this.fogOfWarVisitedTexture.context.createRadialGradient(
-            this.player.x, this.player.y, this.LIGHT_RADIUS * 2,
-            this.player.x, this.player.y, this.LIGHT_RADIUS* 2);
+            this.player.x, this.player.y, this.LIGHT_RADIUS * 0.75,
+            this.player.x, this.player.y, this.LIGHT_RADIUS);
         gradient.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
         gradient.addColorStop(1, 'rgba(255, 255, 255, 1.0)');
         
