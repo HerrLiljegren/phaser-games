@@ -37,24 +37,34 @@ function create() {
     for(var i = 0; i < MAX_BOIDS; i++) {
         
         var boid = boids.create(game.world.randomX, game.world.randomY, 'soldier');
-        game.physics.arcade.enableBody(boid);
+        boid.velocity = new Phaser.Point();
+        //game.physics.arcade.enable(boid);
     }
 }
 
 function update() {
-    var target = game.input.activePointer.position;
+    
     var velocity1 = new Phaser.Point();
     var velocity2 = new Phaser.Point();
     var velocity3 = new Phaser.Point();
     
     boids.forEach(function(boid) {
+        var target = game.input.activePointer.position.clone();
         
         velocity1 = rule1(boids, boid);
         velocity2 = rule2(boids, boid);
         velocity3 = rule3(boids, boid);
         var v = Phaser.Point.add(velocity1, velocity2);
         v = Phaser.Point.add(velocity3, v);
-        boid.body.velocity.setTo(v.x, v.y);
+        var d = target.subtract(boid.x, boid.y).normalize();
+        
+        
+        v.add(d.x, d.y).normalize();
+        
+        boid.x += v.x;
+        boid.y += v.y;
+        boid.rotation = Math.atan2(d.y, d.x);
+        
     });
 }
 
@@ -64,27 +74,52 @@ function rule1(boids, boid) {
     
     boids.forEach(function(b) {
         if(b !== boid) {
-            p.add(boid.x, boid.y);
+            p.add(b.x, b.y);
+        }
+    });
+    p.divide(boids.length - 1, boids.length - 1)
+        .subtract(boid.x, boid.y)
+        .divide(400, 400);
+    
+    return p;
+}
+
+// Rule 2: Boids try to keep a small distance away from other objects (including other boids).
+function rule2(boids, boid) {
+    var p = new Phaser.Point();
+    
+    boids.forEach(function(b) {
+        if(b !== boid) {
+            //var length = b.position.clone().subtract(boid.x, boid.y).getMagnitude();
+            var distance = Phaser.Math.distance(b.x, b.y, boid.x, boid.y);
+            
+            if(distance < 32) {
+                p.x -= (b.x - boid.x);
+                p.y -= (b.y - boid.y);
+            }
+            
+            if(distance < 16) {
+                console.log("ok");
+            }
         }
     });
     
-    p.x = p.x / boids.length - 1;
-    p.y = p.y / boids.length - 1;
-    
-    p.subtract(boid.x, boid.y);
-    
-    p.x /= 1;
-    p.y /= 1;
-    
     return p;
 }
 
-function rule2(boids, boid) {
-    var p = new Phaser.Point();
-    return p;
-}
-
+// Rule 3: Boids try to match velocity with near boids.
 function rule3(boids, boid) {
     var p = new Phaser.Point();
+    return p;
+    boids.forEach(function(b) {
+        if(b !== boid) {
+            p.add(b.velocity.x, b.velocity.y);
+        }
+    });
+    
+    p.divide(boids.length - 1, boids.length - 1)
+        .subtract(boid.velocity.x, boid.velocity.y)
+        .divide(8, 8);
+    
     return p;
 }
